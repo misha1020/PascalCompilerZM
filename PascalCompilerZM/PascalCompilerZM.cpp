@@ -38,7 +38,7 @@ int main()
 	}
 
 	ofstream fResult;
-	fResult.open("Result.txt");
+	fResult.open("Result.lst");
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
 	NextCh(errPositions, fPascalCode, fResult, errorsArray);
@@ -56,31 +56,71 @@ int main()
 
 void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, string *errArray)
 {
+	outFile << "				Работает ZM-компилятор" << endl;
+	outFile << "				Листинг программы:" << endl;
 	int currLineNum = 0;
 	int lastError = 0;
-	string currentLine = "", errorLine = "";
+	string currentLine = "", errorLine = "", isLineNumLesTen = "";
 	char currLiter;
 	while (!inFile.eof())
 	{
-		inFile >> currLiter;
-		currentLine += currLiter;
-		if (currLiter == ' ')
-			cout << "LOL!" << endl;
-		if (inFile.peek() == '\n' || inFile.peek() == EOF)
+		getline(inFile, currentLine);
+		for (int i = 0; i < currentLine.length(); i++)
 		{
-			outFile << currentLine << endl;
-			currentLine = "";
-			while (errPos[lastError].lineNumber - 1 == currLineNum)
-			{
-				for (int i = 0; i < errPos[lastError].charNumber - 1; i++)
-					errorLine += " ";
-				errorLine += "^ ошибка код ";
-				outFile << errorLine << errPos[lastError].errNumber << endl;
-				outFile << errArray[errPos[lastError].errNumber] << endl;
-				lastError++;
-				errorLine = "";
-			}
-			currLineNum++;
+			currLiter = currentLine[i];
+			// здесь что-то происходит с литерами
 		}
+		if (currLineNum < 10)
+			isLineNumLesTen = "   ";
+		else
+			isLineNumLesTen = "   ";
+		outFile << isLineNumLesTen << currLineNum + 1 << "   " << currentLine << endl;
+		while (errPos[lastError].lineNumber - 1 == currLineNum)
+		{
+			for (int i = 0; i < errPos[lastError].charNumber - 1; i++)
+				errorLine += " ";
+			errorLine += "^ ошибка код ";
+			if (lastError < 10)
+				isLineNumLesTen = "**0";
+			else
+				isLineNumLesTen = "**";
+			outFile << isLineNumLesTen << lastError + 1 << "** " << errorLine << errPos[lastError].errNumber << endl;
+			outFile << "****** " << errArray[errPos[lastError].errNumber] << endl;
+			lastError++;
+
+			errorLine = "";
+		}
+		currLineNum++;
 	}
 }
+
+//void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, string *errArray)
+//{
+//	int currLineNum = 0;
+//	int lastError = 0;
+//	string currentLine = "", errorLine = "";
+//	char currLiter;
+//	while (!inFile.eof())
+//	{
+//		inFile >> currLiter;
+//		currentLine += currLiter;
+//		if (currLiter == ' ')
+//			cout << "LOL!" << endl;
+//		if (inFile.peek() == '\n' || inFile.peek() == EOF)
+//		{
+//			outFile << currentLine << endl;
+//			currentLine = "";
+//			while (errPos[lastError].lineNumber - 1 == currLineNum)
+//			{
+//				for (int i = 0; i < errPos[lastError].charNumber - 1; i++)
+//					errorLine += " ";
+//				errorLine += "^ ошибка код ";
+//				outFile << errorLine << errPos[lastError].errNumber << endl;
+//				outFile << errArray[errPos[lastError].errNumber] << endl;
+//				lastError++;
+//				errorLine = "";
+//			}
+//			currLineNum++;
+//		}
+//	}
+//}
