@@ -2,8 +2,13 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
+#include <map>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
+using namespace boost;
 
 struct textPosition
 {
@@ -12,17 +17,22 @@ struct textPosition
 	int errNumber;
 };
 
-void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, string *errArray);
+void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
 
 int main()
 {
 	setlocale(LC_ALL, "Russian");
-	string *errorsArray = new string[500];									// INT_MAX
+	vector<string> errorsVec;
+	map<int, string> errorsMap;
 	int allErrorsCount = 0;
 	ifstream fErrMsgs("Err.msg");
-	while (getline(fErrMsgs, errorsArray[allErrorsCount]))
+	string errorString = "";
+	while (getline(fErrMsgs, errorString))
 	{
-		allErrorsCount++;
+
+		split(errorsVec, errorString, [](char c) {return c == ':'; });
+		int errorNum = lexical_cast<int>(errorsVec[0]);
+		errorsMap[errorNum] = errorsVec[1];
 	}
 	fErrMsgs.close();
 
@@ -41,20 +51,15 @@ int main()
 	fResult.open("Result.lst");
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
-	NextCh(errPositions, fPascalCode, fResult, errorsArray);
-
+	NextCh(errPositions, fPascalCode, fResult, errorsMap);
 	fResult.close();
 	fPascalCode.close();
-	//for (int i = 0; i < currErrorsCount; i++)
-	//	cout << "Считанная строка: " << errPositions[i].lineNumber << errPositions[i].charNumber << errPositions[i].errNumber << endl;
-	//for (int i = 0; i < allErrorsCount; i++)
-	//	cout << "Считанная строка: " << errorsArray[i] << endl;
 
 	system("pause");
 	return 0;
 }
 
-void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, string *errArray)
+void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 {
 	outFile << "				Работает ZM-компилятор" << endl;
 	outFile << "				Листинг программы:" << endl;
@@ -85,7 +90,7 @@ void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, string *e
 			else
 				isLineNumLesTen = "**";
 			outFile << isLineNumLesTen << lastError + 1 << "** " << errorLine << errPos[lastError].errNumber << endl;
-			outFile << "****** " << errArray[errPos[lastError].errNumber] << endl;
+			outFile << "****** " << errorsMap[errPos[lastError].errNumber] << endl;
 			lastError++;
 
 			errorLine = "";
