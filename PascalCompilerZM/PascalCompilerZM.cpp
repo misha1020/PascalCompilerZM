@@ -10,11 +10,25 @@
 using namespace std;
 using namespace boost;
 
+const int MAX_ERR_COUNT = 20;
+
 struct textPosition
 {
 	int lineNumber;
 	int charNumber;
 	int errNumber;
+
+	textPosition(int line, int chr, int err)
+	{
+		lineNumber = line;
+		charNumber = chr;
+		errNumber = err;
+	}
+
+	textPosition()
+	{
+
+	}
 };
 
 void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
@@ -36,10 +50,11 @@ int main()
 	}
 	fErrMsgs.close();
 
-	textPosition errPositions[500];
+	// Эту часть кода вынести в функцию, которая будет при вызове добавлять новую ошибку в список ошибок
+	textPosition errPositions[20];
 	ifstream fErrors("ErrTable.txt");
 	int currErrorsCount = 0;
-	while (!fErrors.eof())
+	while (!fErrors.eof() && currErrorsCount < MAX_ERR_COUNT)
 	{
 		fErrors >> errPositions[currErrorsCount].lineNumber;
 		fErrors >> errPositions[currErrorsCount].charNumber;
@@ -52,8 +67,12 @@ int main()
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
 	NextCh(errPositions, fPascalCode, fResult, errorsMap);
-	fResult.close();
 	fPascalCode.close();
+	if (currErrorsCount < 20)
+		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
+	else
+		fResult << endl << "Компиляция окончена, ошибок больше 20!";
+	fResult.close();
 
 	system("pause");
 	return 0;
