@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "DECKEY.h"
+#include "DECW.h"
+
 using namespace std;
 
 struct textPosition

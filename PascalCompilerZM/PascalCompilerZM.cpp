@@ -9,8 +9,6 @@
 #include <boost/lexical_cast.hpp>
 
 #include "Lexical.h"
-#include "DECKEY.h"
-#include "DECW.h"
 
 using namespace std;
 using namespace boost;
@@ -68,15 +66,9 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 	int currLineNum = 0;
 	int lastError = 0;
 	string currentLine = "", errorLine = "", isLineNumLesTen = "";
-	char currLiter;
 	while (!inFile.eof())
 	{
 		getline(inFile, currentLine);
-		for (int i = 0; i < currentLine.length(); i++)
-		{
-			currLiter = currentLine[i];
-			// здесь что-то происходит с литерами
-		}
 
 		nextLexemsVec = GetNextLexems(currentLine);
 
