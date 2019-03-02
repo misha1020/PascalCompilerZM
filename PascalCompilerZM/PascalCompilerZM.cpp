@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -7,31 +8,17 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include "Lexical.h"
+#include "DECKEY.h"
+#include "DECW.h"
+
 using namespace std;
 using namespace boost;
 
-const int MAX_ERR_COUNT = 20;
+int currErrorsCount = 0;
 
-struct textPosition
-{
-	int lineNumber;
-	int charNumber;
-	int errNumber;
-
-	textPosition(int line, int chr, int err)
-	{
-		lineNumber = line;
-		charNumber = chr;
-		errNumber = err;
-	}
-
-	textPosition()
-	{
-
-	}
-};
-
-void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
+void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
+void AddErrorToTable(int lineNum, int charNum, int errNum);
 
 int main()
 {
@@ -49,24 +36,11 @@ int main()
 		errorsMap[errorNum] = errorsVec[1];
 	}
 	fErrMsgs.close();
-
-	// Эту часть кода вынести в функцию, которая будет при вызове добавлять новую ошибку в список ошибок
-	textPosition errPositions[20];
-	ifstream fErrors("ErrTable.txt");
-	int currErrorsCount = 0;
-	while (!fErrors.eof() && currErrorsCount < MAX_ERR_COUNT)
-	{
-		fErrors >> errPositions[currErrorsCount].lineNumber;
-		fErrors >> errPositions[currErrorsCount].charNumber;
-		fErrors >> errPositions[currErrorsCount].errNumber;
-		currErrorsCount++;
-	}
-
 	ofstream fResult;
 	fResult.open("Result.lst");
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
-	NextCh(errPositions, fPascalCode, fResult, errorsMap);
+	GetNextLine(fPascalCode, fResult, errorsMap);
 	fPascalCode.close();
 	if (currErrorsCount < 20)
 		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
@@ -78,10 +52,19 @@ int main()
 	return 0;
 }
 
-void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
+void AddErrorToTable(int lineNum, int charNum, int errNum)
+{
+	errPositions[currErrorsCount].lineNumber = lineNum;
+	errPositions[currErrorsCount].charNumber = charNum;
+	errPositions[currErrorsCount].errNumber = errNum;
+	currErrorsCount++;
+}
+
+void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 {
 	outFile << "				Работает ZM-компилятор" << endl;
 	outFile << "				Листинг программы:" << endl;
+	vector<int> nextLexemsVec;
 	int currLineNum = 0;
 	int lastError = 0;
 	string currentLine = "", errorLine = "", isLineNumLesTen = "";
@@ -94,22 +77,25 @@ void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, map<int, 
 			currLiter = currentLine[i];
 			// здесь что-то происходит с литерами
 		}
+
+		nextLexemsVec = GetNextLexems(currentLine);
+
 		if (currLineNum < 10)
 			isLineNumLesTen = "   ";
 		else
-			isLineNumLesTen = "   ";
+			isLineNumLesTen = "  ";
 		outFile << isLineNumLesTen << currLineNum + 1 << "   " << currentLine << endl;
-		while (errPos[lastError].lineNumber - 1 == currLineNum)
+		while (errPositions[lastError].lineNumber - 1 == currLineNum)
 		{
-			for (int i = 0; i < errPos[lastError].charNumber - 1; i++)
+			for (int i = 0; i < errPositions[lastError].charNumber - 1; i++)
 				errorLine += " ";
 			errorLine += "^ ошибка код ";
 			if (lastError < 10)
 				isLineNumLesTen = "**0";
 			else
 				isLineNumLesTen = "**";
-			outFile << isLineNumLesTen << lastError + 1 << "** " << errorLine << errPos[lastError].errNumber << endl;
-			outFile << "****** " << errorsMap[errPos[lastError].errNumber] << endl;
+			outFile << isLineNumLesTen << lastError + 1 << "** " << errorLine << errPositions[lastError].errNumber << endl;
+			outFile << "****** " << errorsMap[errPositions[lastError].errNumber] << endl;
 			lastError++;
 
 			errorLine = "";
