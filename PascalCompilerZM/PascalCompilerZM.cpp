@@ -13,10 +13,8 @@
 using namespace std;
 using namespace boost;
 
-int currErrorsCount = 0;
 
 void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
-void AddErrorToTable(int lineNum, int charNum, int errNum);
 
 int main()
 {
@@ -50,13 +48,7 @@ int main()
 	return 0;
 }
 
-void AddErrorToTable(int lineNum, int charNum, int errNum)
-{
-	errPositions[currErrorsCount].lineNumber = lineNum;
-	errPositions[currErrorsCount].charNumber = charNum;
-	errPositions[currErrorsCount].errNumber = errNum;
-	currErrorsCount++;
-}
+
 
 void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 {
@@ -65,28 +57,27 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 	vector<int> nextLexemsVec;
 	int currLineNum = 0;
 	int lastError = 0;
-	string currentLine = "", errorLine = "", isLineNumLesTen = "";
+	string currentLine = "", errorLine = "", isLineNumLessTen = "";
 	while (!inFile.eof())
 	{
 		getline(inFile, currentLine);
-
-		nextLexemsVec = GetNextLexems(currentLine);
-
+		to_lower(currentLine);
+		nextLexemsVec = GetNextLexems(currentLine, currLineNum);
 		if (currLineNum < 10)
-			isLineNumLesTen = "   ";
+			isLineNumLessTen = "   ";
 		else
-			isLineNumLesTen = "  ";
-		outFile << isLineNumLesTen << currLineNum + 1 << "   " << currentLine << endl;
-		while (errPositions[lastError].lineNumber - 1 == currLineNum)
+			isLineNumLessTen = "  ";
+		outFile << isLineNumLessTen << currLineNum + 1 << "   " << currentLine << endl;
+		while (errPositions[lastError].lineNumber == currLineNum && errPositions[lastError].errNumber != 0)
 		{
 			for (int i = 0; i < errPositions[lastError].charNumber - 1; i++)
 				errorLine += " ";
 			errorLine += "^ ошибка код ";
 			if (lastError < 10)
-				isLineNumLesTen = "**0";
+				isLineNumLessTen = "**0";
 			else
-				isLineNumLesTen = "**";
-			outFile << isLineNumLesTen << lastError + 1 << "** " << errorLine << errPositions[lastError].errNumber << endl;
+				isLineNumLessTen = "**";
+			outFile << isLineNumLessTen << lastError + 1 << "** " << errorLine << errPositions[lastError].errNumber << endl;
 			outFile << "****** " << errorsMap[errPositions[lastError].errNumber] << endl;
 			lastError++;
 
@@ -95,34 +86,3 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 		currLineNum++;
 	}
 }
-
-//void NextCh(textPosition *errPos, ifstream& inFile, ofstream& outFile, string *errArray)
-//{
-//	int currLineNum = 0;
-//	int lastError = 0;
-//	string currentLine = "", errorLine = "";
-//	char currLiter;
-//	while (!inFile.eof())
-//	{
-//		inFile >> currLiter;
-//		currentLine += currLiter;
-//		if (currLiter == ' ')
-//			cout << "LOL!" << endl;
-//		if (inFile.peek() == '\n' || inFile.peek() == EOF)
-//		{
-//			outFile << currentLine << endl;
-//			currentLine = "";
-//			while (errPos[lastError].lineNumber - 1 == currLineNum)
-//			{
-//				for (int i = 0; i < errPos[lastError].charNumber - 1; i++)
-//					errorLine += " ";
-//				errorLine += "^ ошибка код ";
-//				outFile << errorLine << errPos[lastError].errNumber << endl;
-//				outFile << errArray[errPos[lastError].errNumber] << endl;
-//				lastError++;
-//				errorLine = "";
-//			}
-//			currLineNum++;
-//		}
-//	}
-//}

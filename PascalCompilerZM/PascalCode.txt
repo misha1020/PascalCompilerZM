@@ -1,5 +1,11 @@
-Some code
-chto-to = chto-to
-var a = 5
-var a = "lol"
-nu i konec!
+const Pi := 3.1415; 
+
+var 
+r: real;
+S: real;
+1r3d: real;
+
+begin 
+r := 12.3; 
+S := Pi * r * r; 
+end;
