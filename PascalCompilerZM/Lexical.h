@@ -5,11 +5,14 @@
 #include <map>
 #include <regex>
 #include <fstream>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "DECKEY.h"
 #include "DECW.h"
 
 using namespace std;
+using namespace boost;
 
 struct textPosition
 {

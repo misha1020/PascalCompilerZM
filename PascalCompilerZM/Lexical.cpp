@@ -102,7 +102,7 @@ bool IsName(string s)
 
 bool IsInt(string s)
 {
-	regex rx("[+-]?[0-9]*");
+	regex rx("[+-]?[0-9]+");
 	return regex_match(s.begin(), s.end(), rx);
 }
 
@@ -135,7 +135,13 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			if (IsName(lexem))
 				currentLexems.push_back(ident);
 			else if (IsInt(lexem))
-				currentLexems.push_back(intc);
+			{
+				int currentInt = lexical_cast<int>(lexem);
+				if (currentInt > 32767 || currentInt < -32766)
+					AddErrorToTable(lineNum, posNum, 203);
+				else
+					currentLexems.push_back(intc);
+			}
 			else if (IsFloat(lexem))
 				currentLexems.push_back(floatc);
 			else
@@ -164,7 +170,7 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				IsLexemCorrenct(string(1, currentLiter), lineNum, i, currentLexems);			// ??
 				currentString = "";
 			}
-			else if (currentLiter == '-' && !isComment)
+			else if (currentLiter == '-')
 			{
 				if (i < currentLine.length() && IsInt(string(1, currentLine[i + 1])))
 				{
@@ -184,26 +190,30 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				{
 					isComment = false;
 					i++;
-					currentLexems.push_back(rcomment);
+					IsLexemCorrenct("*)", lineNum, i, currentLexems);
+					//currentLexems.push_back(rcomment);
 				}
 				else if (!isComment)
-					currentLexems.push_back(star);
+					IsLexemCorrenct("*", lineNum, i, currentLexems);
+				//currentLexems.push_back(star);
 				currentString = "";
 			}
-			else if (currentLiter == '(' && !isComment)
+			else if (currentLiter == '(')
 			{
 				IsLexemCorrenct(currentString, lineNum, i, currentLexems);
 				if (i < currentLine.length() && currentLine[i + 1] == '*')
 				{
 					isComment = true;
 					i++;
-					currentLexems.push_back(lcomment);
+					IsLexemCorrenct("(*", lineNum, i, currentLexems);
+					//currentLexems.push_back(lcomment);
 				}
 				else
-					currentLexems.push_back(leftpar);
+					IsLexemCorrenct("(", lineNum, i, currentLexems);
+				//currentLexems.push_back(leftpar);
 				currentString = "";
 			}
-			else if (currentLiter == '.' && !isComment)
+			else if (currentLiter == '.')
 			{
 				if (i > 0 && IsInt(string(1, currentLine[i - 1])))
 				{
@@ -213,17 +223,19 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				{
 					IsLexemCorrenct(currentString, lineNum, i, currentLexems);
 					i++;
-					currentLexems.push_back(twopoints);
+					IsLexemCorrenct("..", lineNum, i, currentLexems);
+					//currentLexems.push_back(twopoints);
 					currentString = "";
 				}
 				else
 				{
 					IsLexemCorrenct(currentString, lineNum, i, currentLexems);
-					currentLexems.push_back(point);
+					IsLexemCorrenct(".", lineNum, i, currentLexems);
+					//currentLexems.push_back(point);
 					currentString = "";
 				}
 			}
-			else if (currentLiter == '<' && !isComment)
+			else if (currentLiter == '<')
 			{
 				IsLexemCorrenct(currentString, lineNum, i, currentLexems);
 				if (i < currentLine.length())
@@ -232,42 +244,50 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 					if (currentLiter == '>')
 					{
 						i++;
-						currentLexems.push_back(latergreater);
+						IsLexemCorrenct("<>", lineNum, i, currentLexems);
+						//currentLexems.push_back(latergreater);
 					}
 					else if (currentLiter == '=')
 					{
 						i++;
-						currentLexems.push_back(laterequal);
+						IsLexemCorrenct("<=", lineNum, i, currentLexems);
+						//currentLexems.push_back(laterequal);
 					}
 					else
-						currentLexems.push_back(later);
+						IsLexemCorrenct("<", lineNum, i, currentLexems);
+						//currentLexems.push_back(later);
 				}
 				else
-					currentLexems.push_back(later);
+					IsLexemCorrenct("<", lineNum, i, currentLexems);
+					//currentLexems.push_back(later);
 				currentString = "";
 			}
-			else if (currentLiter == '>' && !isComment)
+			else if (currentLiter == '>')
 			{
 				IsLexemCorrenct(currentString, lineNum, i, currentLexems);
 				if (i < currentLine.length() && currentLine[i + 1] == '=')
 				{
 					i++;
-					currentLexems.push_back(greaterequal);
+					IsLexemCorrenct(">=", lineNum, i, currentLexems);
+					//currentLexems.push_back(greaterequal);
 				}
 				else
-					currentLexems.push_back(greater);
+					IsLexemCorrenct(">", lineNum, i, currentLexems);
+					//currentLexems.push_back(greater);
 				currentString = "";
 			}
-			else if (currentLiter == ':' && !isComment)
+			else if (currentLiter == ':')
 			{
 				IsLexemCorrenct(currentString, lineNum, i, currentLexems);
 				if (i < currentLine.length() && currentLine[i + 1] == '=')
 				{
 					i++;
-					currentLexems.push_back(assign);
+					IsLexemCorrenct(":=", lineNum, i, currentLexems);
+					//currentLexems.push_back(assign);
 				}
 				else
-					currentLexems.push_back(colon);
+					IsLexemCorrenct(":", lineNum, i, currentLexems);
+					//currentLexems.push_back(colon);
 				currentString = "";
 			}
 			else
