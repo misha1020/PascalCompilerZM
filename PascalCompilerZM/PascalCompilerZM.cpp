@@ -14,7 +14,7 @@ using namespace std;
 using namespace boost;
 
 
-void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
+void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap, ofstream& fSym);
 
 int main()
 {
@@ -36,7 +36,9 @@ int main()
 	fResult.open("Result.lst");
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
-	GetNextLine(fPascalCode, fResult, errorsMap);
+	ofstream fSym;
+	fSym.open("Sym.txt");
+	GetNextLine(fPascalCode, fResult, errorsMap, fSym);
 	fPascalCode.close();
 	if (currErrorsCount < 20)
 		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
@@ -50,7 +52,7 @@ int main()
 
 
 
-void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
+void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap, ofstream& fSym)
 {
 	outFile << "				Работает ZM-компилятор" << endl;
 	outFile << "				Листинг программы:" << endl;
@@ -58,12 +60,19 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 	int currLineNum = 0;
 	int lastError = 0;
 	string currentLine = "", errorLine = "", isLineNumLessTen = "";
+
 	while (!inFile.eof())
 	{
 		getline(inFile, currentLine);
 		to_lower(currentLine);
+
 		nextLexemsVec = GetNextLexems(currentLine, currLineNum);
-		if (currLineNum < 10)
+
+		for (int j = 0; j < nextLexemsVec.size(); j++)
+			fSym << nextLexemsVec[j] << "   ";
+		fSym << endl;
+
+		if (currLineNum < 9)
 			isLineNumLessTen = "   ";
 		else
 			isLineNumLessTen = "  ";

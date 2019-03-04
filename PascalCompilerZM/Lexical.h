@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <regex>
+#include <fstream>
 
 #include "DECKEY.h"
 #include "DECW.h"
@@ -30,6 +31,7 @@ struct textPosition
 
 const int MAX_ERR_COUNT = 20;
 extern int currErrorsCount;
+extern bool isComment;
 extern textPosition errPositions[MAX_ERR_COUNT];
 
 vector<int> GetNextLexems(string currentLine, int lineNum);
