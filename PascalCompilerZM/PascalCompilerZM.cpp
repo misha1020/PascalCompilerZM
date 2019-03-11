@@ -36,6 +36,7 @@ int main()
 	fResult.open("Result.lst");
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
+	//fPascalCode.open("Test.txt");
 	ofstream fSym;
 	fSym.open("Sym.txt");
 	GetNextLine(fPascalCode, fResult, errorsMap, fSym);
@@ -79,10 +80,10 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 		outFile << isLineNumLessTen << currLineNum + 1 << "   " << currentLine << endl;
 		while (errPositions[lastError].lineNumber == currLineNum && errPositions[lastError].errNumber != 0)
 		{
-			for (int i = 0; i < errPositions[lastError].charNumber - 1; i++)
+			for (int i = 0; i < errPositions[lastError].charNumber; i++)
 				errorLine += " ";
 			errorLine += "^ ошибка код ";
-			if (lastError < 10)
+			if (lastError < 9)
 				isLineNumLessTen = "**0";
 			else
 				isLineNumLessTen = "**";
