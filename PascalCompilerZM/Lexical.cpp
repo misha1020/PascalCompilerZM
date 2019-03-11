@@ -136,7 +136,7 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 {
 	if (lexem != "" && !isComment)
 	{
-		posNum -= lexem.length();
+		posNum = posNum - lexem.length() + 1;
 		if (keyWords.find(lexem) != keyWords.end())
 		{
 			int definer = keyWords.find(lexem)->second;
@@ -321,10 +321,10 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 		}
 		else
 		{
-			IsLexemCorrenct(currentString, lineNum, i, currentLexems);
+			IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
 			currentString = "";
 		}
 	}
-	IsLexemCorrenct(currentString, lineNum, currentLine.length(), currentLexems);
+	IsLexemCorrenct(currentString, lineNum, currentLine.length() - 1, currentLexems);
 	return currentLexems;
 }
