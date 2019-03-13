@@ -6,6 +6,9 @@ textPosition errPositions[MAX_ERR_COUNT];
 int currErrorsCount = 0;
 bool isComment = false;
 
+int lexemsCurrSize = 2;
+lexems*  allLexems = new lexems[lexemsCurrSize];
+int lexemsCount = 0;
 
 map<string, int> keyWords = {
 {"do", dosy},
@@ -126,47 +129,85 @@ bool IsChar(string s)
 
 void AddErrorToTable(int lineNum, int charNum, int errNum)
 {
-	errPositions[currErrorsCount].lineNumber = lineNum;
-	errPositions[currErrorsCount].charNumber = charNum;
-	errPositions[currErrorsCount].errNumber = errNum;
-	currErrorsCount++;
+	if (currErrorsCount < 20)
+	{
+		errPositions[currErrorsCount].lineNumber = lineNum;
+		errPositions[currErrorsCount].charNumber = charNum;
+		errPositions[currErrorsCount].errNumber = errNum;
+		currErrorsCount++;
+	}
+}
+
+void ArrayResize()
+{
+	int sizeNew = lexemsCurrSize * 2;
+	lexems*  arrayNew = new lexems[sizeNew];
+	memmove(arrayNew, allLexems, sizeof(lexems) * lexemsCurrSize);
+	delete[] allLexems;
+	allLexems = arrayNew;
+	lexemsCurrSize = sizeNew;
+}
+
+void AddLexem(int lineNum, int charNum, int lexem)
+{
+	if (lexemsCount == lexemsCurrSize)
+		ArrayResize();
+	allLexems[lexemsCount].lineNumber = lineNum;
+	allLexems[lexemsCount].charNumber = charNum;
+	allLexems[lexemsCount].lexem = lexem;
+	lexemsCount++;
 }
 
 void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& currentLexems)
 {
 	if (lexem != "" && !isComment)
 	{
-		posNum = posNum - lexem.length() + 1;
 		if (keyWords.find(lexem) != keyWords.end())
 		{
 			int definer = keyWords.find(lexem)->second;
+			AddLexem(lineNum, posNum, definer);
 			currentLexems.push_back(definer);
 		}
 		else
 		{
 			if (IsName(lexem))
+			{
+				AddLexem(lineNum, posNum, ident);
 				currentLexems.push_back(ident);
+			}
 			else if (IsInt(lexem))
 			{
 				int currentInt = lexical_cast<int>(lexem);
 				if (currentInt > 32767 || currentInt < -32766)
 					AddErrorToTable(lineNum, posNum, 203);
 				else
+				{
+					AddLexem(lineNum, posNum, intc);
 					currentLexems.push_back(intc);
+				}
 			}
 			else if (IsReal(lexem))
+			{
+				AddLexem(lineNum, posNum, floatc);
 				currentLexems.push_back(floatc);
 			//206:слишком маленькая вещественная константа
 			//207 : слишком большая вещественная константа
+			}
 			else if (IsString(lexem))
+			{
+				AddLexem(lineNum, posNum, stringc);
 				currentLexems.push_back(stringc);
+			}
 			else if (IsChar(lexem))
 			{
 				string currentChar = lexical_cast<string>(lexem);
 				if (currentChar.length() > 3)
 					AddErrorToTable(lineNum, posNum, 75);
 				else
+				{
+					AddLexem(lineNum, posNum, charc);
 					currentLexems.push_back(charc);
+				}
 			}
 			else
 				AddErrorToTable(lineNum, posNum, 6);

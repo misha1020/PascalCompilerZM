@@ -1,10 +1,10 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <map>
 #include <regex>
-#include <fstream>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -19,17 +19,13 @@ struct textPosition
 	int lineNumber;
 	int charNumber;
 	int errNumber;
+};
 
-	textPosition(int line, int chr, int err)
-	{
-		lineNumber = line;
-		charNumber = chr;
-		errNumber = err;
-	}
-	textPosition()
-	{
-
-	}
+struct lexems
+{
+	int lineNumber;
+	int charNumber;
+	int lexem;
 };
 
 const int MAX_ERR_COUNT = 20;
@@ -37,4 +33,8 @@ extern int currErrorsCount;
 extern bool isComment;
 extern textPosition errPositions[MAX_ERR_COUNT];
 
+extern int lexemsCount;
+extern lexems*  allLexems;
+
 vector<int> GetNextLexems(string currentLine, int lineNum);
+void AddErrorToTable(int lineNum, int charNum, int errNum);

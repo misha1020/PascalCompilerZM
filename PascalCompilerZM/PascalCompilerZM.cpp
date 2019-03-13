@@ -9,6 +9,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "Lexical.h"
+#include "Syntactic.h"
 
 using namespace std;
 using namespace boost;
@@ -24,6 +25,7 @@ int main()
 	int allErrorsCount = 0;
 	ifstream fErrMsgs("Err.msg");
 	string errorString = "";
+
 	while (getline(fErrMsgs, errorString))
 	{
 
@@ -32,15 +34,23 @@ int main()
 		errorsMap[errorNum] = errorsVec[1];
 	}
 	fErrMsgs.close();
+
 	ofstream fResult;
 	fResult.open("Result.lst");
 	ifstream fPascalCode;
-	fPascalCode.open("PascalCode.txt");
-	//fPascalCode.open("Test.txt");
-	ofstream fSym;
-	fSym.open("Sym.txt");
-	GetNextLine(fPascalCode, fResult, errorsMap, fSym);
+	//fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Test.txt");
+
+	ofstream fSymWrite;
+	fSymWrite.open("Sym.txt");
+	GetNextLine(fPascalCode, fResult, errorsMap, fSymWrite);
+	fSymWrite.close();
+
+	ifstream fSymRead;
+	fSymRead.open("Sym.txt");
+	Parsing(fSymRead);
 	fPascalCode.close();
+	
 	if (currErrorsCount < 20)
 		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
 	else
@@ -73,6 +83,7 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 			fSym << nextLexemsVec[j] << "   ";
 		fSym << endl;
 
+		
 		if (currLineNum < 9)
 			isLineNumLessTen = "   ";
 		else
