@@ -8,6 +8,6 @@
 using namespace std;
 using namespace boost;
 
-extern int lexemNumber;
+extern int lexNum;
 
-void Parsing(ifstream& fSym);
+void Parsing();

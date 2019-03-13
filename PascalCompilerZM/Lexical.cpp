@@ -6,7 +6,7 @@ textPosition errPositions[MAX_ERR_COUNT];
 int currErrorsCount = 0;
 bool isComment = false;
 
-int lexemsCurrSize = 2;
+int lexemsCurrSize = 256;
 lexems*  allLexems = new lexems[lexemsCurrSize];
 int lexemsCount = 0;
 

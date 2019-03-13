@@ -39,22 +39,19 @@ int main()
 	fResult.open("Result.lst");
 	ifstream fPascalCode;
 	//fPascalCode.open("PascalCode.txt");
-	fPascalCode.open("Test.txt");
+	fPascalCode.open("Code.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
 	GetNextLine(fPascalCode, fResult, errorsMap, fSymWrite);
 	fSymWrite.close();
 
-	ifstream fSymRead;
-	fSymRead.open("Sym.txt");
-	Parsing(fSymRead);
-	fPascalCode.close();
+	//Parsing();
 	
-	if (currErrorsCount < 20)
+	if (currErrorsCount < MAX_ERR_COUNT)
 		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
 	else
-		fResult << endl << "Компиляция окончена, ошибок больше 20!";
+		fResult << endl << "Компиляция окончена, ошибок больше " << MAX_ERR_COUNT << "!";
 	fResult.close();
 
 	system("pause");
