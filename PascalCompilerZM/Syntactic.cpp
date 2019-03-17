@@ -16,15 +16,183 @@ void Accept(int neededSym, int currentSym, int lineNum, int posNum)
 		lexNum++;
 }
 
-void ExpressiongParsing()
+void ExpressionOperations()
 {
-
+	while (allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus
+		|| allLexems[lexNum].lexem == star || allLexems[lexNum].lexem == slash)
+	{
+		switch (allLexems[lexNum].lexem)
+		{
+		case plus:
+			Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case minus:
+			Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case star:
+			Accept(star, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case slash:
+			Accept(slash, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		}
+		ExpressionPlusMinus();
+	}
 }
 
+void ExpressionPlusMinus()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case intc:
+		Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case floatc:
+		Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void ExpressionInOutBrackets()
+{
+	if (allLexems[lexNum].lexem == minus)
+	{
+		Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		ExpressionPlusMinus();
+		ExpressionOperations();
+	}
+	else if (allLexems[lexNum].lexem == plus)
+	{
+		Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		ExpressionPlusMinus();
+		ExpressionOperations();
+	}
+	else if (allLexems[lexNum].lexem == ident || allLexems[lexNum].lexem == intc || allLexems[lexNum].lexem == floatc)
+	{
+		ExpressionPlusMinus();
+		ExpressionOperations();
+	}
+	else
+	{
+		switch (allLexems[lexNum].lexem)
+		{
+		case stringc:
+			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case charc:
+			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case TRUE:
+			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case FALSE:
+			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void ExpressiongParsing()
+{
+	if (allLexems[lexNum].lexem == leftpar)
+	{
+		Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		ExpressionInOutBrackets();
+		Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+
+	}
+	else
+		ExpressionInOutBrackets();
+}
+
+void StatementSwitch()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		OperatorVariableParsing();
+		break;
+	case ifsy:
+		OperatorIfParsing();
+		break;
+	case whilesy:
+		OperatorWhileParsing();
+		break;
+	case repeatsy:
+		OperatorRepeatParsing();
+		break;
+	case forsy:
+		OperatorForParsing();
+		break;
+	}
+}
 
 void StatementParsing()
 {
+	if (allLexems[lexNum].lexem != endsy)
+	{
+		StatementSwitch();
+		while (allLexems[lexNum].lexem == semicolon)
+		{
+			StatementSwitch();
+			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		}
+	}
+}
 
+void OperatorVariableParsing()
+{
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	if (allLexems[lexNum].lexem == lbracket)
+	{
+		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		ArrayInBrackets();
+		while (allLexems[lexNum].lexem == comma)
+			ArrayInBrackets();
+		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	}
+	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+}
+
+void OperatorWhileParsing()
+{
+	Accept(whilesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	StatementParsing();
+	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void OperatorRepeatParsing()
+{
+	Accept(repeatsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	StatementParsing();
+	while (allLexems[lexNum].lexem == semicolon)
+	{
+		StatementParsing();
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	}
+	Accept(untilsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+}
+
+void OperatorForParsing()
+{
+	Accept(forsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+	Accept(tosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	StatementParsing();
 }
 
 void OperatorIfParsing()
@@ -38,7 +206,6 @@ void OperatorIfParsing()
 		Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		StatementParsing();
 	}
-
 }
 
 void Type()
@@ -46,9 +213,27 @@ void Type()
 
 }
 
-void VarParsing()
+void ArrayInBrackets()
 {
-	Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+	Accept(twopoints, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ExpressiongParsing();
+}
+
+void ArrayMake()
+{
+	Accept(arraysy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	ArrayInBrackets();
+	while (allLexems[lexNum].lexem == comma)
+		ArrayInBrackets();
+	Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);	//Type();
+}
+
+void VarMake()
+{
 	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	while (allLexems[lexNum].lexem == comma)
 	{
@@ -56,25 +241,70 @@ void VarParsing()
 		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	}
 	Accept(colon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Type();
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);	//Type();
+		break;
+	case arraysy:
+		ArrayMake();
+		break;
+	}
+	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void VarParsing()
+{
+	Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	while (allLexems[lexNum].lexem == ident)
+		VarMake();
+}
+
+
+void TypeMake()
+{
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case arraysy:
+		ArrayMake();
+		break;
+	}
+	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void TypeParsing()
+{
+	Accept(typesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	while (allLexems[lexNum].lexem == ident)
+		TypeMake();
 }
 
 void BlockParsing()
 {
-	VarParsing();
+	if (allLexems[lexNum].lexem == typesy)
+		TypeParsing();
+	if (allLexems[lexNum].lexem == varsy)
+		VarParsing();
 	Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	StatementParsing();
 	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-
 }
 
 void ProgramParsing()
 {
+	if (allLexems[lexNum].lexem == programsy)
+	{
 		Accept(programsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		BlockParsing();
-		Accept(point, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	}
+	BlockParsing();
+	Accept(point, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 }
 
 void Parsing()
