@@ -190,7 +190,7 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			{
 				AddLexem(lineNum, posNum, floatc);
 				currentLexems.push_back(floatc);
-			//206:слишком маленькая вещественная константа
+			//206 : слишком маленькая вещественная константа
 			//207 : слишком большая вещественная константа
 			}
 			else if (IsString(lexem))

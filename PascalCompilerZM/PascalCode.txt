@@ -1,25 +1,21 @@
-const Pi := 3.1415; 
+program my;
 
-var 
-r: real;
-(*S: real;*)
-1r3d: real 1f2;
+type intg = integer;
+ch = bool;
 
-"string"
-99832
-327
--443321
+var a:intg;
+b:ch;
 
-"char"
-1231.12312
-'a'
-'sadasd'
-& ?
+begin
+a := 3;
+b := TRUE;
+if a > 2 then
+a := a - 2
+else
+a := a + 2;
 
-begin 
-r := 12.3; 
-S := Pi * r * r; 
-end;
-
-a = 5 - 4;
-1..4
+while b or FALSE do begin
+b := FALSE;
+a := a * 2 + 3 - 7 + 3 - 1;
+end
+end.

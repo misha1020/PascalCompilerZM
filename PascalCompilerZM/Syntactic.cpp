@@ -53,6 +53,9 @@ void ExpressionPlusMinus()
 	case floatc:
 		Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
+	default:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
 	}
 }
 
@@ -80,16 +83,16 @@ void ExpressionInOutBrackets()
 		switch (allLexems[lexNum].lexem)
 		{
 		case stringc:
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			Accept(stringc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		case charc:
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			Accept(charc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		case TRUE:
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			Accept(TRUE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		case FALSE:
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			Accept(FALSE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		default:
 			break;
@@ -97,17 +100,105 @@ void ExpressionInOutBrackets()
 	}
 }
 
-void ExpressiongParsing()
+void BooleanCheck()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case TRUE:
+		Accept(TRUE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case FALSE:
+		Accept(FALSE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	default:
+		Accept(TRUE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);	
+		break;
+	}
+}
+
+void ExpressionForNot()
+{
+	Accept(notsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	BooleanCheck();
+}
+
+bool ExpressiionMake()
 {
 	if (allLexems[lexNum].lexem == leftpar)
 	{
 		Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		if (allLexems[lexNum].lexem == notsy)
+		{
+			ExpressionForNot();
+			Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			return true;
+		}
 		ExpressionInOutBrackets();
 		Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-
+		// После право скобки продолжается выржание
+		return false;
+	}
+	else if (allLexems[lexNum].lexem == notsy)
+	{
+		ExpressionForNot();
+		return true;
 	}
 	else
+	{
 		ExpressionInOutBrackets();
+		return false;
+	}
+}
+
+void ExpressiongParsing()
+{
+	bool NotExpression = ExpressiionMake();
+	if (!NotExpression)
+		if (allLexems[lexNum].lexem == andsy)
+		{
+			Accept(andsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			BooleanCheck();
+		}
+		else if (allLexems[lexNum].lexem == orsy)
+		{
+			Accept(orsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			BooleanCheck();
+		}
+		else
+		{
+			switch (allLexems[lexNum].lexem)
+			{
+			case equal:
+				Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				ExpressiionMake();
+				break;
+			case latergreater:
+				Accept(latergreater, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				ExpressiionMake();
+				break;
+			case later:
+				Accept(later, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				ExpressiionMake();
+				break;
+			case greater:
+				Accept(greater, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				ExpressiionMake();
+				break;
+			case laterequal:
+				Accept(laterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				ExpressiionMake();
+				break;
+			case greaterequal:
+				Accept(greaterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				ExpressiionMake();
+				break;
+			default:
+				break;
+			}
+		}
 }
 
 void StatementSwitch()
@@ -129,20 +220,19 @@ void StatementSwitch()
 	case forsy:
 		OperatorForParsing();
 		break;
+	default:
+		break;
 	}
 }
 
 void StatementParsing()
 {
-	if (allLexems[lexNum].lexem != endsy)
+	StatementSwitch();
+	while (allLexems[lexNum].lexem == semicolon)
 	{
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		StatementSwitch();
-		while (allLexems[lexNum].lexem == semicolon)
-		{
-			StatementSwitch();
-			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		}
-	}
+	}		
 }
 
 void OperatorVariableParsing()
@@ -249,6 +339,9 @@ void VarMake()
 	case arraysy:
 		ArrayMake();
 		break;
+	default:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);	
+		break;
 	}
 	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 }
@@ -272,6 +365,9 @@ void TypeMake()
 		break;
 	case arraysy:
 		ArrayMake();
+		break;
+	default:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	}
 	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -309,8 +405,8 @@ void ProgramParsing()
 
 void Parsing()
 {
-	for (int i = 0; i < lexemsCount; i++)
-		cout << allLexems[i].lexem << "  " << allLexems[i].lineNumber << "  " << allLexems[i].charNumber << endl;
+	//for (int i = 0; i < lexemsCount; i++)
+	//	cout << allLexems[i].lexem << "  " << allLexems[i].lineNumber << "  " << allLexems[i].charNumber << endl;
 	
 	if (lexemsCount > 0)
 	{

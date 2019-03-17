@@ -32,4 +32,3 @@ void ExpressionInOutBrackets();
 void ExpressionPlusMinus();
 void ExpressionOperations();
 void Accept(int neededSym, int currentSym, int lineNum, int posNum);
-

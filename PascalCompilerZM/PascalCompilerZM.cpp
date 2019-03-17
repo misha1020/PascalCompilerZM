@@ -14,8 +14,8 @@
 using namespace std;
 using namespace boost;
 
-
-void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap, ofstream& fSym);
+void GetNextLine(ifstream& inFile, ofstream& fSym);
+void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
 
 int main()
 {
@@ -35,18 +35,25 @@ int main()
 	}
 	fErrMsgs.close();
 
-	ofstream fResult;
-	fResult.open("Result.lst");
 	ifstream fPascalCode;
-	//fPascalCode.open("PascalCode.txt");
-	fPascalCode.open("Code.txt");
+	fPascalCode.open("PascalCode.txt");
+	//fPascalCode.open("Code.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
-	GetNextLine(fPascalCode, fResult, errorsMap, fSymWrite);
+	GetNextLine(fPascalCode,  fSymWrite);
 	fSymWrite.close();
+	fPascalCode.close();
 
-	//Parsing();
+	Parsing();
+
+	ofstream fResult;
+	fResult.open("Result.lst");
+	fPascalCode.open("PascalCode.txt");
+	Print(fPascalCode, fResult, errorsMap);
+	fResult.close();
+
+	fPascalCode.close();
 	
 	if (currErrorsCount < MAX_ERR_COUNT)
 		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
@@ -60,32 +67,40 @@ int main()
 
 
 
-void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap, ofstream& fSym)
+void GetNextLine(ifstream& inFile, ofstream& fSym)
 {
-	outFile << "				Работает ZM-компилятор" << endl;
-	outFile << "				Листинг программы:" << endl;
 	vector<int> nextLexemsVec;
 	int currLineNum = 0;
-	int lastError = 0;
-	string currentLine = "", errorLine = "", isLineNumLessTen = "";
+	string currentLine = "";
 
 	while (!inFile.eof())
 	{
 		getline(inFile, currentLine);
 		to_lower(currentLine);
-
 		nextLexemsVec = GetNextLexems(currentLine, currLineNum);
-
 		for (int j = 0; j < nextLexemsVec.size(); j++)
 			fSym << nextLexemsVec[j] << "   ";
 		fSym << endl;
+		currLineNum++;
+	}
+}
 
-		
+void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
+{
+	outFile << "				Работает ZM-компилятор" << endl;
+	outFile << "				Листинг программы:" << endl;
+	string isLineNumLessTen = "", errorLine = "", currentLine = "";
+	int currLineNum = 0, lastError = 0;
+
+	while (!inFile.eof())
+	{
+		getline(inFile, currentLine);
 		if (currLineNum < 9)
 			isLineNumLessTen = "   ";
 		else
 			isLineNumLessTen = "  ";
 		outFile << isLineNumLessTen << currLineNum + 1 << "   " << currentLine << endl;
+
 		while (errPositions[lastError].lineNumber == currLineNum && errPositions[lastError].errNumber != 0)
 		{
 			for (int i = 0; i < errPositions[lastError].charNumber; i++)
@@ -98,7 +113,6 @@ void GetNextLine(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap
 			outFile << isLineNumLessTen << lastError + 1 << "** " << errorLine << errPositions[lastError].errNumber << endl;
 			outFile << "****** " << errorsMap[errPositions[lastError].errNumber] << endl;
 			lastError++;
-
 			errorLine = "";
 		}
 		currLineNum++;
