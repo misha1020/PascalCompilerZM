@@ -2,9 +2,12 @@ program my;
 
 type intg = integer;
 ch = bool;
+(* LOL *)
+
 
 var a:intg;
 b:ch;
+a:array [1..10] of integer;
 
 begin
 a := 3;
@@ -14,8 +17,8 @@ a := a - 2
 else
 a := a + 2;
 
-while b or FALSE do begin
-b := FALSE;
-a := a * 2 + 3 - 7 + 3 - 1;
-end
+repeat
+;;;;;;;
+until (2 > 2);
+
 end.

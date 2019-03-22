@@ -86,12 +86,6 @@ map<string, int> keyWords = {
 {"*)", rcomment    },
 {":=", assign      },
 {"..", twopoints   },
-{"ident", ident    },
-{"float", floatc   },
-{"int", intc       },
-{"char", charc     },
-{"string", stringc },
-{"eof", endoffile  },
 {"eolint", eolint  },
 {"false", FALSE    },
 {"true", TRUE      }
@@ -245,7 +239,6 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				{
 					IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
 					IsLexemCorrenct("-", lineNum, i, currentLexems);
-					//currentLexems.push_back(point);
 					currentString = "";
 				}
 			}
@@ -254,14 +247,14 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
 				if (i < currentLine.length() && currentLine[i + 1] == ')')
 				{
+					if (!isComment)
+						IsLexemCorrenct("*)", lineNum, i, currentLexems);
 					isComment = false;
 					i++;
-					IsLexemCorrenct("*)", lineNum, i, currentLexems);
-					//currentLexems.push_back(rcomment);
+
 				}
 				else if (!isComment)
 					IsLexemCorrenct("*", lineNum, i, currentLexems);
-				//currentLexems.push_back(star);
 				currentString = "";
 			}
 			else if (currentLiter == '(')
@@ -270,13 +263,11 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				if (i < currentLine.length() && currentLine[i + 1] == '*')
 				{
 					isComment = true;
-					i++;
 					IsLexemCorrenct("(*", lineNum, i, currentLexems);
-					//currentLexems.push_back(lcomment);
+					i++;
 				}
 				else
 					IsLexemCorrenct("(", lineNum, i, currentLexems);
-				//currentLexems.push_back(leftpar);
 				currentString = "";
 			}
 			else if (currentLiter == '.')
@@ -288,7 +279,6 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 						IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
 						IsLexemCorrenct("..", lineNum, i, currentLexems);
 						i++;
-						//currentLexems.push_back(twopoints);
 						currentString = "";
 					}
 					else
@@ -298,7 +288,6 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				{
 					IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
 					IsLexemCorrenct(".", lineNum, i, currentLexems);
-					//currentLexems.push_back(point);
 					currentString = "";
 				}
 			}
@@ -312,21 +301,17 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 					{
 						i++;
 						IsLexemCorrenct("<>", lineNum, i, currentLexems);
-						//currentLexems.push_back(latergreater);
 					}
 					else if (currentLiter == '=')
 					{
 						i++;
 						IsLexemCorrenct("<=", lineNum, i, currentLexems);
-						//currentLexems.push_back(laterequal);
 					}
 					else
 						IsLexemCorrenct("<", lineNum, i, currentLexems);
-						//currentLexems.push_back(later);
 				}
 				else
 					IsLexemCorrenct("<", lineNum, i, currentLexems);
-					//currentLexems.push_back(later);
 				currentString = "";
 			}
 			else if (currentLiter == '>')
@@ -336,11 +321,9 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				{
 					i++;
 					IsLexemCorrenct(">=", lineNum, i, currentLexems);
-					//currentLexems.push_back(greaterequal);
 				}
 				else
 					IsLexemCorrenct(">", lineNum, i, currentLexems);
-					//currentLexems.push_back(greater);
 				currentString = "";
 			}
 			else if (currentLiter == ':')
@@ -350,11 +333,9 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 				{
 					i++;
 					IsLexemCorrenct(":=", lineNum, i, currentLexems);
-					//currentLexems.push_back(assign);
 				}
 				else
 					IsLexemCorrenct(":", lineNum, i, currentLexems);
-					//currentLexems.push_back(colon);
 				currentString = "";
 			}
 			else

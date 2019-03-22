@@ -4,20 +4,25 @@
    2   
    3   type intg = integer;
    4   ch = bool;
-   5   
-   6   var a:intg;
-   7   b:ch;
-   8   
-   9   begin
-  10   a := 3;
-  11   b := TRUE;
-  12   if a > 2 then
-  13   a := a - 2
-  14   else
-  15   a := a + 2;
-  16   
-  17   while b or FALSE do begin
-  18   b := FALSE;
-  19   a := a * 2 + 3 - 7 + 3 - 1;
-  20   end
-  21   end.
+   5   (* LOL *)
+   6   
+   7   
+   8   var a:intg;
+   9   b:ch;
+   10   a:array [1..10] of integer;
+  11   
+  12   begin
+  13   a := 3;
+  14   b := TRUE;
+  15   if a > 2 then
+  16   a := a - 2
+  17   else
+  18   a := a + 2;
+  19   
+  20   repeat
+  21   ;;;;;;;
+  22   until (2 > 2);
+  23   
+  24   end.
+
+Кoмпиляция окончена, ошибок: 1!

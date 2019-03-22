@@ -43,6 +43,10 @@ int main()
 	fSymWrite.open("Sym.txt");
 	GetNextLine(fPascalCode,  fSymWrite);
 	fSymWrite.close();
+	//fSymWrite.open("Sym.txt");
+
+	//fSymWrite.close();
+
 	fPascalCode.close();
 
 	Parsing();
@@ -51,14 +55,7 @@ int main()
 	fResult.open("Result.lst");
 	fPascalCode.open("PascalCode.txt");
 	Print(fPascalCode, fResult, errorsMap);
-	fResult.close();
-
 	fPascalCode.close();
-	
-	if (currErrorsCount < MAX_ERR_COUNT)
-		fResult << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
-	else
-		fResult << endl << "Компиляция окончена, ошибок больше " << MAX_ERR_COUNT << "!";
 	fResult.close();
 
 	system("pause");
@@ -83,6 +80,11 @@ void GetNextLine(ifstream& inFile, ofstream& fSym)
 		fSym << endl;
 		currLineNum++;
 	}
+	fSym  << 999;
+	allLexems[lexemsCount].lexem = 999;
+	allLexems[lexemsCount].lineNumber = currLineNum;
+	allLexems[lexemsCount].charNumber = 0;
+	lexemsCount++;
 }
 
 void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
@@ -97,8 +99,8 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 		getline(inFile, currentLine);
 		if (currLineNum < 9)
 			isLineNumLessTen = "   ";
-		else
-			isLineNumLessTen = "  ";
+		//else
+		//	isLineNumLessTen = "  ";
 		outFile << isLineNumLessTen << currLineNum + 1 << "   " << currentLine << endl;
 
 		while (errPositions[lastError].lineNumber == currLineNum && errPositions[lastError].errNumber != 0)
@@ -116,5 +118,21 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 			errorLine = "";
 		}
 		currLineNum++;
+		if (currLineNum > 9)
+			isLineNumLessTen = "  ";
+
 	}
+	AddErrorToTable(currLineNum, 3, 61);
+
+	//outFile << isLineNumLessTen << currLineNum + 1 << "   " << 999 << endl;
+	//errorLine += "^ ошибка код ";
+	//if (lastError < 9)
+	//	isLineNumLessTen = "**0";
+	//outFile << isLineNumLessTen << lastError + 1 << "** " << errorLine << errPositions[lastError].errNumber << endl;
+	//outFile << "****** " << errorsMap[errPositions[lastError].errNumber] << endl;
+
+	if (currErrorsCount < MAX_ERR_COUNT)
+		outFile << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
+	else
+		outFile << endl << "Компиляция окончена, ошибок больше " << MAX_ERR_COUNT << "!";
 }
