@@ -229,39 +229,6 @@ void ArrayInBrackets()
 	ExpressionParsing();
 }
 
-
-
-void VarMake()
-{
-	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	while (allLexems[lexNum].lexem == comma)
-	{
-		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	}
-	Accept(colon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	switch (allLexems[lexNum].lexem)
-	{
-	case ident:
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);	//Type();
-		break;
-	case arraysy:
-		ArrayMake();
-		break;
-	default:
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);	
-		break;
-	}
-	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-}
-
-void VarParsing()
-{
-	Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	while (allLexems[lexNum].lexem == ident)
-		VarMake();
-}
-
 void ConstMake()
 {
 	switch (allLexems[lexNum].lexem)
@@ -331,6 +298,27 @@ void ArrayMake()
 		//Type();
 }
 
+void VarMake()
+{
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	while (allLexems[lexNum].lexem == comma)
+	{
+		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	}
+	Accept(colon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	TypeMake();
+	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void VarParsing()
+{
+	Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	VarMake();
+	while (allLexems[lexNum].lexem == ident)
+		VarMake();
+}
+ 
 void TypeMake()
 {
 	switch (allLexems[lexNum].lexem)
@@ -345,9 +333,7 @@ void TypeMake()
 		TypeSimple();
 		break;
 	case arraysy:
-		ArrayMake();
-		break;
-	default:
+	{
 		Accept(arraysy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		TypeSimple();
@@ -356,6 +342,10 @@ void TypeMake()
 		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		TypeMake();
+	}
+		break;
+	default:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	}
 }
