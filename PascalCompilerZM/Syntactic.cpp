@@ -439,16 +439,16 @@ void StatementParsing()
 {
 	//if (lexNum < lexemsCount - 1)
 	//{
+	StatementMake();
+	while (allLexems[lexNum].lexem == semicolon) // && lexNum < lexemsCount)
+	{
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		StatementMake();
-		while (allLexems[lexNum].lexem == semicolon) // && lexNum < lexemsCount)
-		{
-			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			StatementMake();
-		}
-		//if (lexNum == lexemsCount - 1)
-		//	return;
 	}
+	//if (lexNum == lexemsCount - 1)
+	//	return;
 }
+
 
 void BlockParsing()
 {

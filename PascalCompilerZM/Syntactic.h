@@ -14,7 +14,7 @@ extern stack<char> brackets;
 
 void Parsing();
 void Type();
-void ProgramParsing();
+void ConstMake();
 void BlockParsing();
 void TypeParsing();
 void TypeMake();
