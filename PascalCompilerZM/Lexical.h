@@ -34,6 +34,7 @@ extern bool isComment;
 extern textPosition errPositions[MAX_ERR_COUNT];
 
 extern int lexemsCount;
+extern 	int currLineNum;
 extern lexems*  allLexems;
 
 vector<int> GetNextLexems(string currentLine, int lineNum);

@@ -14,6 +14,8 @@
 using namespace std;
 using namespace boost;
 
+int currLineNum = 0;
+
 void GetNextLine(ifstream& inFile, ofstream& fSym);
 void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
 
@@ -37,16 +39,11 @@ int main()
 
 	ifstream fPascalCode;
 	fPascalCode.open("PascalCode.txt");
-	//fPascalCode.open("Code.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
 	GetNextLine(fPascalCode,  fSymWrite);
 	fSymWrite.close();
-	//fSymWrite.open("Sym.txt");
-
-	//fSymWrite.close();
-
 	fPascalCode.close();
 
 	Parsing();
@@ -67,7 +64,7 @@ int main()
 void GetNextLine(ifstream& inFile, ofstream& fSym)
 {
 	vector<int> nextLexemsVec;
-	int currLineNum = 0;
+	currLineNum = 0;
 	string currentLine = "";
 
 	while (!inFile.eof())
@@ -80,11 +77,11 @@ void GetNextLine(ifstream& inFile, ofstream& fSym)
 		fSym << endl;
 		currLineNum++;
 	}
-	fSym  << 999;
-	allLexems[lexemsCount].lexem = 999;
-	allLexems[lexemsCount].lineNumber = currLineNum;
-	allLexems[lexemsCount].charNumber = 0;
-	lexemsCount++;
+	//fSym  << 999;
+	//allLexems[lexemsCount].lexem = 999;
+	//allLexems[lexemsCount].lineNumber = currLineNum;
+	//allLexems[lexemsCount].charNumber = 0;
+	//lexemsCount++;
 }
 
 void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
@@ -92,15 +89,16 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 	outFile << "				Работает ZM-компилятор" << endl;
 	outFile << "				Листинг программы:" << endl;
 	string isLineNumLessTen = "", errorLine = "", currentLine = "";
-	int currLineNum = 0, lastError = 0;
+	int lastError = 0;
+	currLineNum = 0;
 
 	while (!inFile.eof())
 	{
 		getline(inFile, currentLine);
 		if (currLineNum < 9)
 			isLineNumLessTen = "   ";
-		//else
-		//	isLineNumLessTen = "  ";
+		else
+			isLineNumLessTen = "  ";
 		outFile << isLineNumLessTen << currLineNum + 1 << "   " << currentLine << endl;
 
 		while (errPositions[lastError].lineNumber == currLineNum && errPositions[lastError].errNumber != 0)
@@ -122,8 +120,7 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 			isLineNumLessTen = "  ";
 
 	}
-	AddErrorToTable(currLineNum, 3, 61);
-
+	//AddErrorToTable(currLineNum, 3, 61);
 	//outFile << isLineNumLessTen << currLineNum + 1 << "   " << 999 << endl;
 	//errorLine += "^ ошибка код ";
 	//if (lastError < 9)

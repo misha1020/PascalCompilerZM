@@ -7,8 +7,13 @@ stack<char> brackets;
 
 void Accept(int neededSym, int currentSym, int lineNum, int posNum)
 {
-	if (currentSym != neededSym && lexNum < lexemsCount)
+	if (currentSym != neededSym)
 	{
+		if (lexNum >= lexemsCount)
+		{
+			lineNum = currLineNum - 1;
+			posNum = 0;
+		}
 		AddErrorToTable(lineNum, posNum, neededSym);
 		cout << "Ошибка " << neededSym << " в строке " << lineNum << " в символе " << posNum << " добавлена в таблицу ошибок!" << endl;
 	}
@@ -44,7 +49,7 @@ void MultiplierParsing()
 			Accept(FALSE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		case ident:
-			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			OperatorVariableParsing();
 			break;
 		case leftpar:
 		{
@@ -133,10 +138,10 @@ void ExpressionSimple()
 	}
 }
 
-void ExpressionParsing() // ?????????/
+void ExpressionParsing()
 {
 	ExpressionSimple();
-	while (allLexems[lexNum].lexem == equal || allLexems[lexNum].lexem == latergreater
+	if (allLexems[lexNum].lexem == equal || allLexems[lexNum].lexem == latergreater
 		|| allLexems[lexNum].lexem == later || allLexems[lexNum].lexem == greater
 		|| allLexems[lexNum].lexem == laterequal || allLexems[lexNum].lexem == greaterequal)
 	{
@@ -164,18 +169,6 @@ void ExpressionParsing() // ?????????/
 		ExpressionSimple();
 	}
 
-}
-
-void Type()
-{
-
-}
-
-void ArrayInBrackets()
-{
-	ExpressionParsing();
-	Accept(twopoints, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	ExpressionParsing();
 }
 
 void ConstMake()
@@ -232,19 +225,13 @@ void TypeSimple()
 	case charc:
 	case minus:
 	case plus:
+	case floatc:
 	case intc:
 		ConstMake();
 		Accept(twopoints, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		ConstMake();
 		break;
 	}
-}
-
-
-void ArrayMake()
-{
-	ArrayInBrackets();
-		//Type();
 }
 
 void VarMake()
@@ -278,7 +265,8 @@ void TypeMake()
 	case charc:
 	case minus:
 	case plus:
-	case intc:
+	case intc:	
+	case floatc:
 		TypeSimple();
 		break;
 	case arraysy:
@@ -287,7 +275,10 @@ void TypeMake()
 		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		TypeSimple();
 		while (allLexems[lexNum].lexem == comma)
+		{
+			Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			TypeSimple();
+		}
 		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		TypeMake();
@@ -305,12 +296,13 @@ void TypeParsing()
 	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	TypeMake();
-	while (allLexems[lexNum].lexem == semicolon)
+	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	while (allLexems[lexNum].lexem == ident)
 	{
-		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		TypeMake();
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	}
 }
 
@@ -322,11 +314,13 @@ void OperatorVariableParsing()
 		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		ExpressionParsing();
 		while (allLexems[lexNum].lexem == comma)
+		{
+			Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			ExpressionParsing();
+		}
 		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	}
 }
-
 
 void OperatorWhileParsing()
 {
@@ -376,9 +370,9 @@ void OperatorIfParsing()
 
 void StatementMake()
 {
-	while (allLexems[lexNum].lexem == ident || allLexems[lexNum].lexem == ifsy || allLexems[lexNum].lexem == whilesy
+	while (allLexems[lexNum].lexem == ident || allLexems[lexNum].lexem == beginsy || allLexems[lexNum].lexem == casesy 
+		|| allLexems[lexNum].lexem == ifsy || allLexems[lexNum].lexem == whilesy
 		|| allLexems[lexNum].lexem == repeatsy || allLexems[lexNum].lexem == forsy)
-	{
 		switch (allLexems[lexNum].lexem)
 		{
 		case ident:
@@ -400,11 +394,6 @@ void StatementMake()
 			Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		}
 			break;
-		case ifsy:
-		{
-			OperatorIfParsing();
-		}
-			break;
 		case casesy:
 		{
 			ExpressionParsing();
@@ -418,21 +407,19 @@ void StatementMake()
 			Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		}
 			break;
+		case ifsy:
+			OperatorIfParsing();
+			break;
 		case whilesy:
-		{
 			OperatorWhileParsing();
-		}
 			break;
 		case repeatsy:
-		{
 			OperatorRepeatParsing();
-		}
 			break;
 		case forsy:
 			OperatorForParsing();
 			break;
 		}
-	}
 }
 
 void StatementParsing()
@@ -448,7 +435,6 @@ void StatementParsing()
 	//if (lexNum == lexemsCount - 1)
 	//	return;
 }
-
 
 void BlockParsing()
 {

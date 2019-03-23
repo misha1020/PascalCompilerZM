@@ -1,24 +1,45 @@
 program my;
 
-type intg = integer;
+type int = integer;
 ch = bool;
 (* LOL *)
 
-
-var a:intg;
+var a:int;
 b:ch;
-a:array [1..10] of integer;
+a:array [1..10, 1..10] of array[1..5] of integer;
 
 begin
-a := 3;
+a[1,1] := 3;
 b := TRUE;
-if a > 2 then
+if a[1,1] > 2 then
 a := a - 2
 else
 a := a + 2;
 
-repeat
-;;;;;;;
-until (2 > 2);
+for i:=1 to n do
+a := b;
+c := d;
 
+while a < b do
+begin
+c := 3;
+d := c div c;
+d := c mod c;
+a[1] := 6 / 2;
+b := 1 * 3;
+e := TRUE;
+d := a > b;
+d := a >= b;
+d := a < b;
+d := a <= b;
+d := a <> b;
+d := a = b;
+p := a or b;
+a := a and b;
+end;
+
+repeat
+a[1,1] := a[1,1] + 1;
+until (a[1,1] > 2)
+;;;
 end.
