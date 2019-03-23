@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <regex>
+#include <cmath>
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 

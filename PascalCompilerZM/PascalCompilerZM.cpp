@@ -38,7 +38,7 @@ int main()
 	fErrMsgs.close();
 
 	ifstream fPascalCode;
-	fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Code.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
@@ -46,11 +46,11 @@ int main()
 	fSymWrite.close();
 	fPascalCode.close();
 
-	Parsing();
+	//Parsing();
 
 	ofstream fResult;
 	fResult.open("Result.lst");
-	fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Code.txt");
 	Print(fPascalCode, fResult, errorsMap);
 	fPascalCode.close();
 	fResult.close();

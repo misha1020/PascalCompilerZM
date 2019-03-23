@@ -105,19 +105,13 @@ bool IsInt(string s)
 
 bool IsReal(string s)
 {
-	regex rx("[0-9]+[.]{1}[0-9]+([eE][-][0-9]+)?");
+	regex rx("[0-9]+[.]{1}[0-9]+([eE][-]{0,1}[0-9]+)?");
 	return regex_match(s.begin(), s.end(), rx);
 }
 
 bool IsString(string s)
 {
-	regex rx("\".*\"");
-	return regex_match(s.begin(), s.end(), rx);
-}
-
-bool IsChar(string s)
-{
-	regex rx("\'.+\'");
+	regex rx("\'.*\'");
 	return regex_match(s.begin(), s.end(), rx);
 }
 
@@ -182,25 +176,57 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			}
 			else if (IsReal(lexem))
 			{
+				
+				
+				vector<string> floatValueParts;
+				boost::split(floatValueParts, lexem, boost::is_any_of("e"));
+				if (floatValueParts.size() == 2)
+				{
+					if (floatValueParts[0].length() > 12)
+					{
+						AddErrorToTable(lineNum, posNum, 207);
+						return;
+					}
+
+					if (lexical_cast<int>(floatValueParts[1]) > 38)
+					{
+						AddErrorToTable(lineNum, posNum, 207);
+						return;
+					}
+					else if (lexical_cast<int>(floatValueParts[1]) < -39)
+					{
+						AddErrorToTable(lineNum, posNum, 206);
+						return;
+					}
+				}
+				else
+				{
+					if (lexem.length() > 41)
+					{
+						AddErrorToTable(lineNum, posNum, 207);
+						return;
+					}
+				}
+
 				AddLexem(lineNum, posNum, floatc);
 				currentLexems.push_back(floatc);
-			//206 : слишком маленькая вещественная константа
-			//207 : слишком большая вещественная константа
 			}
 			else if (IsString(lexem))
 			{
-				AddLexem(lineNum, posNum, stringc);
-				currentLexems.push_back(stringc);
-			}
-			else if (IsChar(lexem))
-			{
 				string currentChar = lexical_cast<string>(lexem);
-				if (currentChar.length() > 3)
-					AddErrorToTable(lineNum, posNum, 75);
-				else
+				if (currentChar.length() > 257)
+				{
+					AddErrorToTable(lineNum, posNum, 76);
+				}
+				else if (currentChar.length() == 3)
 				{
 					AddLexem(lineNum, posNum, charc);
 					currentLexems.push_back(charc);
+				}
+				else 
+				{
+					AddLexem(lineNum, posNum, stringc);
+					currentLexems.push_back(stringc);
 				}
 			}
 			else
@@ -231,7 +257,7 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 			}
 			else if (currentLiter == '-')
 			{
-				if (i > 0 && currentString[currentString.length()] == 'e')
+				if (i > 0 && currentString[currentString.length() - 1] == 'e')
 				{
 					currentString += "-";
 				}

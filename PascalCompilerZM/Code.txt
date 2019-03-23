@@ -1,12 +1,3 @@
-var n:integer;
- 
-function f(x:integer):longint;
-begin
-   if x = 1 then f := 1 else f := x * f(x-1);
-end;
- 
-begin
-     writeln('введите N (N=1..13)');
-     readln(n);
-     writeln('N!=',f(n));
-end.
+123456789012E39
+
+1.2345678901234567890123456789012345678901
