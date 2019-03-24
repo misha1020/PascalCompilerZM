@@ -176,8 +176,6 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			}
 			else if (IsReal(lexem))
 			{
-				
-				
 				vector<string> floatValueParts;
 				boost::split(floatValueParts, lexem, boost::is_any_of("e"));
 				if (floatValueParts.size() == 2)
@@ -207,7 +205,6 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 						return;
 					}
 				}
-
 				AddLexem(lineNum, posNum, floatc);
 				currentLexems.push_back(floatc);
 			}

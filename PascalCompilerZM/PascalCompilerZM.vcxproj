@@ -156,6 +156,7 @@
     <ClInclude Include="DECW.h" />
     <ClInclude Include="Lexical.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="starters_and_followers.h" />
     <ClInclude Include="Syntactic.h" />
   </ItemGroup>
   <ItemGroup>
