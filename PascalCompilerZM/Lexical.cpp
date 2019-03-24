@@ -254,7 +254,7 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 			}
 			else if (currentLiter == '-')
 			{
-				if (i > 0 && currentString[currentString.length() - 1] == 'e')
+				if (i > 0 && currentString.length() > 0 && currentString[currentString.length() - 1] == 'e')
 				{
 					currentString += "-";
 				}

@@ -1,9 +1,10 @@
 #include "pch.h"
 
 #include "Syntactic.h"
+#include "starters_and_followers.h"
+
 
 int lexNum = 0;
-stack<char> brackets;
 
 void Accept(int neededSym, int currentSym, int lineNum, int posNum)
 {
@@ -18,6 +19,34 @@ void Accept(int neededSym, int currentSym, int lineNum, int posNum)
 		cout << "Ошибка " << neededSym << " в строке " << lineNum << " в символе " << posNum << " добавлена в таблицу ошибок!" << endl;
 	}
 	lexNum++;
+}
+
+bool Belong(int symbol, vector<int> symbols)
+{
+	if (find(symbols.begin(), symbols.end(), symbol) != symbols.end())
+		return true;
+	else
+		return false;
+}
+
+void SkipTo(vector<int> symbols)
+{
+	while (!Belong(allLexems[lexNum].lexem, symbols))
+		lexNum++;
+}
+
+void SkipToBoth(vector<int> starters, vector<int> followers)
+{
+	while (!(Belong(allLexems[lexNum].lexem, starters) || Belong(allLexems[lexNum].lexem, followers)))
+		lexNum++;
+}
+
+vector<int> Union(vector<int> starters, vector<int> followers)
+{
+	vector<int> both;
+	both.insert(both.end(), starters.begin(), starters.end());
+	both.insert(both.end(), followers.begin(), followers.end());
+	return both;
 }
 
 void MultiplierParsing()
@@ -249,6 +278,12 @@ void VarMake()
 
 void VarParsing()
 {
+	//vector<int> ptra;
+	//if (!Belong(allLexems[lexNum].lexem, codes_block))
+	//{
+	//	Accept(18, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//	SkipToBoth(codes_block, followers);
+	//}
 	Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	VarMake();
 	while (allLexems[lexNum].lexem == ident)
@@ -396,13 +431,21 @@ void StatementMake()
 			break;
 		case casesy:
 		{
+			Accept(casesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			ExpressionParsing();
 			Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			CaseCycle();
 			while (allLexems[lexNum].lexem == semicolon)
 			{
 				Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-				CaseCycle();
+				if (allLexems[lexNum].lexem != elsesy)
+					CaseCycle();
+				else
+				{
+					Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+					StatementMake();
+					Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+				}
 			}
 			Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		}
@@ -438,13 +481,35 @@ void StatementParsing()
 
 void BlockParsing()
 {
-	if (allLexems[lexNum].lexem == typesy)
-		TypeParsing();
-	if (allLexems[lexNum].lexem == varsy)
-		VarParsing();
-	Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	StatementParsing();
-	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//vector<int> ptra;
+	//if (!Belong(allLexems[lexNum].lexem, codes_block))
+	//{
+	//	Accept(18, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//	SkipToBoth(codes_block, followers);
+	//}
+	//if (Belong(allLexems[lexNum].lexem, codes_block))
+	//{
+		if (allLexems[lexNum].lexem == typesy)
+		{
+		//	ptra = Union(codes_typ, followers);
+			TypeParsing();
+		}
+
+		if (allLexems[lexNum].lexem == varsy)
+		{
+		//	ptra = Union(codes_typ, followers);
+			VarParsing();
+		}
+		Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		//ptra = Union(codes_typ, followers);
+		StatementParsing();
+		//if (!Belong(allLexems[lexNum].lexem, followers))
+		//{
+		//	Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		//	SkipTo(followers);
+		//}
+		Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//}
 }
 
 void Parsing()

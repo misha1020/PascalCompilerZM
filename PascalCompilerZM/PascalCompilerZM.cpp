@@ -10,6 +10,7 @@
 
 #include "Lexical.h"
 #include "Syntactic.h"
+#include "starters_and_followers.h"
 
 using namespace std;
 using namespace boost;
@@ -21,6 +22,9 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
 
 int main()
 {
+	//vector<int> both = Union(codes_idstart, acodes_block);
+	//cout << 123;
+	
 	setlocale(LC_ALL, "Russian");
 	vector<string> errorsVec;
 	map<int, string> errorsMap;
@@ -54,7 +58,7 @@ int main()
 	Print(fPascalCode, fResult, errorsMap);
 	fPascalCode.close();
 	fResult.close();
-
+	/**/
 	system("pause");
 	return 0;
 }
@@ -77,17 +81,12 @@ void GetNextLine(ifstream& inFile, ofstream& fSym)
 		fSym << endl;
 		currLineNum++;
 	}
-	//fSym  << 999;
-	//allLexems[lexemsCount].lexem = 999;
-	//allLexems[lexemsCount].lineNumber = currLineNum;
-	//allLexems[lexemsCount].charNumber = 0;
-	//lexemsCount++;
 }
 
 void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 {
-	outFile << "				Работает ZM-компилятор" << endl;
-	outFile << "				Листинг программы:" << endl;
+	outFile << "								Работает ZM-компилятор"				 << endl;
+	outFile << "								Листинг программы:"					 << endl;
 	string isLineNumLessTen = "", errorLine = "", currentLine = "";
 	int lastError = 0;
 	currLineNum = 0;
@@ -120,13 +119,6 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 			isLineNumLessTen = "  ";
 
 	}
-	//AddErrorToTable(currLineNum, 3, 61);
-	//outFile << isLineNumLessTen << currLineNum + 1 << "   " << 999 << endl;
-	//errorLine += "^ ошибка код ";
-	//if (lastError < 9)
-	//	isLineNumLessTen = "**0";
-	//outFile << isLineNumLessTen << lastError + 1 << "** " << errorLine << errPositions[lastError].errNumber << endl;
-	//outFile << "****** " << errorsMap[errPositions[lastError].errNumber] << endl;
 
 	if (currErrorsCount < MAX_ERR_COUNT)
 		outFile << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
