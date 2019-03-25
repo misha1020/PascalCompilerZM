@@ -1,6 +1,1 @@
-begin
-if a[1,1] > 2 then
-a := a - 2
-else
-a := a + 2;
-end.
+b := 'jfhwejfhqwkdjwklefjiwoejfhgiuwhefiwheigqjhfkeghkwjeghwekhgwjkehgkwhgwkejgfhwekgjhwegkjfhwejfhqwkdjwklefjiwoejfhgiuwhefiwheigqjhfkeghkwjeghwekhgwjkehgkwhgwkejgfhwekgjhwegkjfhwejfhqwkdjwklefjiwoejfhgiuwhefiwheigqjhfkeghkwjeghwekhgwjkehgkwhgwkejgfhwekgjhwegkjfhwejfhqwkdjwklefjiwoejfhgiuwhefiwheigqjhfkeghkwjeghwekhgwjkehgkwhgwkejgfhwekgjhwegk';

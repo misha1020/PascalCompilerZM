@@ -165,14 +165,19 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			}
 			else if (IsInt(lexem))
 			{
-				int currentInt = lexical_cast<int>(lexem);
-				if (currentInt > 32767 || currentInt < -32766)
-					AddErrorToTable(lineNum, posNum, 203);
-				else
+				if (lexem.length() < 6)
 				{
-					AddLexem(lineNum, posNum, intc);
-					currentLexems.push_back(intc);
+					int currentInt = lexical_cast<int>(lexem);
+					if (currentInt > 32767 || currentInt < -32766)
+						AddErrorToTable(lineNum, posNum, 203);
+					else
+					{
+						AddLexem(lineNum, posNum, intc);
+						currentLexems.push_back(intc);
+					}
 				}
+				else
+					AddErrorToTable(lineNum, posNum, 203);
 			}
 			else if (IsReal(lexem))
 			{
@@ -186,9 +191,12 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 						return;
 					}
 
-					if (lexical_cast<int>(floatValueParts[1]) > 38)
+					if (floatValueParts[1].length() > 2 || lexical_cast<int>(floatValueParts[1]) > 38)
 					{
-						AddErrorToTable(lineNum, posNum, 207);
+						if (floatValueParts[1][0] == '-')
+							AddErrorToTable(lineNum, posNum, 206);
+						else
+							AddErrorToTable(lineNum, posNum, 207);
 						return;
 					}
 					else if (lexical_cast<int>(floatValueParts[1]) < -39)
@@ -210,12 +218,11 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			}
 			else if (IsString(lexem))
 			{
-				string currentChar = lexical_cast<string>(lexem);
-				if (currentChar.length() > 257)
+				if (lexem.length() > 257)
 				{
 					AddErrorToTable(lineNum, posNum, 76);
 				}
-				else if (currentChar.length() == 3)
+				else if (lexem.length() == 3)
 				{
 					AddLexem(lineNum, posNum, charc);
 					currentLexems.push_back(charc);

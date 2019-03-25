@@ -405,6 +405,14 @@ void OperatorIfParsing()
 
 void StatementMake()
 {
+	//vector<int> ptra;
+	//if (!Belong(allLexems[lexNum].lexem, statement_start))
+	//{
+	//	Accept(18, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//	SkipToBoth(statement_start, followers);
+	//}
+	//if (Belong(allLexems[lexNum].lexem, statement_start))
+	//{
 	while (allLexems[lexNum].lexem == ident || allLexems[lexNum].lexem == beginsy || allLexems[lexNum].lexem == casesy 
 		|| allLexems[lexNum].lexem == ifsy || allLexems[lexNum].lexem == whilesy
 		|| allLexems[lexNum].lexem == repeatsy || allLexems[lexNum].lexem == forsy)
@@ -467,41 +475,37 @@ void StatementMake()
 
 void StatementParsing()
 {
-	//if (lexNum < lexemsCount - 1)
-	//{
 	StatementMake();
 	while (allLexems[lexNum].lexem == semicolon) // && lexNum < lexemsCount)
 	{
 		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		StatementMake();
 	}
-	//if (lexNum == lexemsCount - 1)
-	//	return;
 }
 
 void BlockParsing()
 {
 	//vector<int> ptra;
-	//if (!Belong(allLexems[lexNum].lexem, codes_block))
+	//if (!Belong(allLexems[lexNum].lexem, block_start))
 	//{
 	//	Accept(18, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	//	SkipToBoth(codes_block, followers);
+	//	SkipToBoth(block_start, followers);
 	//}
-	//if (Belong(allLexems[lexNum].lexem, codes_block))
+	//if (Belong(allLexems[lexNum].lexem, block_start))
 	//{
 		if (allLexems[lexNum].lexem == typesy)
 		{
-		//	ptra = Union(codes_typ, followers);
+		//	ptra = Union(var_start, followers);
 			TypeParsing();
 		}
 
 		if (allLexems[lexNum].lexem == varsy)
 		{
-		//	ptra = Union(codes_typ, followers);
+		//	ptra = Union(var_start, followers);
 			VarParsing();
 		}
 		Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		//ptra = Union(codes_typ, followers);
+		//ptra = Union(statement_start, followers);
 		StatementParsing();
 		//if (!Belong(allLexems[lexNum].lexem, followers))
 		//{
