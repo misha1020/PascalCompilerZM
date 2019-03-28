@@ -49,180 +49,52 @@ vector<int> Union(vector<int> starters, vector<int> followers)
 	return both;
 }
 
-void MultiplierParsing()
-{
-	while (allLexems[lexNum].lexem == ident || allLexems[lexNum].lexem == leftpar 
-		|| allLexems[lexNum].lexem == notsy || allLexems[lexNum].lexem == intc
-		|| allLexems[lexNum].lexem == floatc || allLexems[lexNum].lexem == stringc
-		|| allLexems[lexNum].lexem == charc || allLexems[lexNum].lexem == TRUE
-		|| allLexems[lexNum].lexem == FALSE)
-	{
-		switch (allLexems[lexNum].lexem)
-		{
-		case intc:
-			Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case floatc:
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case stringc:
-			Accept(stringc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case charc:
-			Accept(charc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case TRUE:
-			Accept(TRUE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case FALSE:
-			Accept(FALSE, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case ident:
-			OperatorVariableParsing();
-			break;
-		case leftpar:
-		{
-			Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			ExpressionParsing();
-			Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		}
-		break;
-		case notsy:
-		{
-			Accept(notsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			MultiplierParsing();
-		}
-			break;
-		default:
-			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		}
-	}
-}
-
 void CaseCycle()
 {
-	ConstMake();
+	Const();
 	while (allLexems[lexNum].lexem == comma)
 	{
 		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		ConstMake();
+		Const();
 	}
 	Accept(colon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	StatementMake();
+	Statement();
 }
 
-void AddendParsing()
-{
-	MultiplierParsing();
-	while (allLexems[lexNum].lexem == divsy || allLexems[lexNum].lexem == modsy || allLexems[lexNum].lexem == andsy
-		|| allLexems[lexNum].lexem == star || allLexems[lexNum].lexem == slash)
-	{
-		switch (allLexems[lexNum].lexem)
-		{
-		case divsy:
-			Accept(divsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case modsy:
-			Accept(modsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case andsy:
-			Accept(andsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case star:
-			Accept(star, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case slash:
-			Accept(slash, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		}
-		MultiplierParsing();
-	}
-}
-
-void ExpressionSimple()
-{
-	if (allLexems[lexNum].lexem == minus)
-		Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	else if (allLexems[lexNum].lexem == plus)
-		Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	AddendParsing();
-	while (allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus || allLexems[lexNum].lexem == orsy)
-	{
-		switch (allLexems[lexNum].lexem)
-		{
-		case plus:
-			Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case minus:
-			Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case orsy:
-			Accept(orsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		default:
-			break;
-		}
-		AddendParsing();
-	}
-}
-
-void ExpressionParsing()
-{
-	ExpressionSimple();
-	if (allLexems[lexNum].lexem == equal || allLexems[lexNum].lexem == latergreater
-		|| allLexems[lexNum].lexem == later || allLexems[lexNum].lexem == greater
-		|| allLexems[lexNum].lexem == laterequal || allLexems[lexNum].lexem == greaterequal)
-	{
-		switch (allLexems[lexNum].lexem)
-		{
-		case equal:
-			Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case latergreater:
-			Accept(latergreater, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case later:
-			Accept(later, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case greater:
-			Accept(greater, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case laterequal:
-			Accept(laterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		case greaterequal:
-			Accept(greaterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			break;
-		}
-		ExpressionSimple();
-	}
-
-}
-
-void ConstMake()
+void MultiplicativeOperation()
 {
 	switch (allLexems[lexNum].lexem)
 	{
+	case divsy:
+		Accept(divsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case modsy:
+		Accept(modsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case andsy:
+		Accept(andsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case star:
+		Accept(star, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case slash:
+		Accept(slash, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void ConstWithoutSign()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
 	case stringc:
 		Accept(stringc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	case charc:
 		Accept(charc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		break;
-	case minus:
-		Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		if (allLexems[lexNum].lexem == intc)
-			Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		else
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		break;
-	case plus:
-		Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		if (allLexems[lexNum].lexem == intc)
-			Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		else
-			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	case intc:
 		Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -233,37 +105,375 @@ void ConstMake()
 	}
 }
 
-void TypeSimple()
+void Multiplier()
 {
 	switch (allLexems[lexNum].lexem)
 	{
 	case ident:
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Variable();
+		break;
+	case charc:
+	case stringc:
+	case intc:
+	case floatc:
+		ConstWithoutSign();
 		break;
 	case leftpar:
 		Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		while (allLexems[lexNum].lexem == comma)
-		{
-			Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		}
+		Expression();
 		Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
-	case stringc:
-	case charc:
-	case minus:
-	case plus:
-	case floatc:
-	case intc:
-		ConstMake();
-		Accept(twopoints, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		ConstMake();
+	case notsy:
+		Accept(notsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Multiplier();
 		break;
 	}
 }
 
-void VarMake()
+void Addend()
+{
+	Multiplier();
+	while (allLexems[lexNum].lexem == divsy || allLexems[lexNum].lexem == modsy || allLexems[lexNum].lexem == andsy
+		|| allLexems[lexNum].lexem == star || allLexems[lexNum].lexem == slash)
+	{
+		MultiplicativeOperation();
+		Multiplier();
+	}
+}
+
+void AdaptiveOperation()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case plus:
+		Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case minus:
+		Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case orsy:
+		Accept(orsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void ExpressionSimple()
+{
+	Sign();
+	Addend();
+	while (allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus || allLexems[lexNum].lexem == orsy)
+	{
+		AdaptiveOperation();
+		Addend();
+	}
+}
+
+void ComparisonOperation()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case equal:
+		Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case latergreater:
+		Accept(latergreater, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case later:
+		Accept(later, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case greater:
+		Accept(greater, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case laterequal:
+		Accept(laterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case greaterequal:
+		Accept(greaterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void Expression()
+{
+	ExpressionSimple();
+	if (allLexems[lexNum].lexem == equal || allLexems[lexNum].lexem == latergreater
+		|| allLexems[lexNum].lexem == later || allLexems[lexNum].lexem == greater
+		|| allLexems[lexNum].lexem == laterequal || allLexems[lexNum].lexem == greaterequal)
+	{
+		ComparisonOperation();
+		ExpressionSimple();
+	}
+}
+
+void Number()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case intc:
+		Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case floatc:
+		Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	default:
+		Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void Sign()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case plus:
+		Accept(plus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case minus:
+		Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void String()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case stringc:
+		Accept(stringc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case charc:
+		Accept(charc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	}
+}
+
+void Const()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case stringc:
+	case charc:
+		String();
+		break;
+	case intc:
+	case floatc:
+		Number();
+		break;
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case minus:
+	case plus:
+	{
+		Sign();
+		if (allLexems[lexNum].lexem == ident)
+			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		else
+			Number();
+	}
+	break;
+	}
+}
+
+void CycleFor()
+{
+	Accept(forsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+	Accept(tosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Statement();
+}
+
+void CycleWhile()
+{
+	Accept(whilesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Statement();
+}
+
+void CycleRepeat()
+{
+	Accept(repeatsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Statement();
+	while (allLexems[lexNum].lexem == semicolon)
+	{
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Statement();
+	}
+	Accept(untilsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+}
+
+void StatementCycle()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case repeatsy:
+		CycleRepeat();
+		break;
+	case whilesy:
+		CycleWhile();
+		break;
+	case forsy:
+		CycleFor();
+		break;
+	}
+}
+
+void StatementConditional()
+{
+	Accept(ifsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+	Accept(thensy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Statement();
+	if (allLexems[lexNum].lexem == elsesy)
+	{
+		Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Statement();
+	}
+}
+
+void StatementComplex()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case beginsy:
+		StatementSection();
+		break;
+	case ifsy:
+		StatementConditional();
+		break;
+	case repeatsy:
+	case whilesy:
+	case forsy:
+		StatementCycle();
+		break;
+	}
+}
+
+void VariableIndexed()
+{
+	Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+	while (allLexems[lexNum].lexem == comma)
+	{
+		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Expression();
+	}
+	Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void Variable()
+{	
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	if (allLexems[lexNum].lexem == lbracket)
+		VariableIndexed();
+}
+
+void StatementTransition()
+{
+	Accept(gotosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void StatementAssignment()
+{
+	Variable();
+	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Expression();
+}
+
+void StatementSimple()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		StatementAssignment();
+		break;
+	case gotosy:
+		StatementTransition();
+		break;
+	}
+}
+
+void StatementUnlabeled()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case beginsy:
+	case ifsy:
+	case whilesy:
+	case repeatsy:
+	case forsy:
+		StatementComplex();
+		break;
+	case ident:
+	case gotosy:
+		StatementSimple();
+		break;
+	}
+}
+
+void Statement()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case intc:
+	{
+		Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		StatementUnlabeled();
+	}
+		break;
+	case beginsy:
+	case ifsy:
+	case whilesy:
+	case repeatsy:
+	case forsy:
+	case ident:
+	case gotosy:
+		StatementUnlabeled();
+		break;
+	}
+}
+
+//case casesy:
+//{
+//	Accept(casesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+//	Expression();
+//	Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+//	CaseCycle();
+//	while (allLexems[lexNum].lexem == semicolon)
+//	{
+//		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+//		if (allLexems[lexNum].lexem != elsesy)
+//			CaseCycle();
+//		else
+//		{
+//			Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+//			Statement();
+//			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+//		}
+//	}
+//	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+//}
+
+void StatementSection()
+{
+	Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Statement();
+	while (allLexems[lexNum].lexem == semicolon)
+	{
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Statement();
+	}
+	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void VarDefinition()
 {
 	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	while (allLexems[lexNum].lexem == comma)
@@ -272,25 +482,81 @@ void VarMake()
 		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	}
 	Accept(colon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	TypeMake();
-	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Type();
+
 }
 
-void VarParsing()
+void VarSection()
 {
-	//vector<int> ptra;
-	//if (!Belong(allLexems[lexNum].lexem, codes_block))
-	//{
-	//	Accept(18, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	//	SkipToBoth(codes_block, followers);
-	//}
-	Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	VarMake();
-	while (allLexems[lexNum].lexem == ident)
-		VarMake();
+	if (allLexems[lexNum].lexem == varsy)
+	{
+		Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		VarDefinition();
+		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		while (allLexems[lexNum].lexem == ident)
+		{
+			VarDefinition();
+			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		}
+	}
 }
- 
-void TypeMake()
+
+void TypeEnumerated()
+{
+	Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	while (allLexems[lexNum].lexem == comma)
+	{
+		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	}
+	Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+}
+
+void TypeLimited()
+{
+	Const();
+	Accept(twopoints, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Const();
+}
+
+void TypeSimple()
+{
+	switch (allLexems[lexNum].lexem)
+	{
+	case ident:
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		break;
+	case leftpar:
+		TypeEnumerated();
+		break;
+	case stringc:
+	case charc:
+	case minus:
+	case plus:
+	case floatc:
+	case intc:
+		TypeLimited();
+		break;
+	}
+}
+
+void TypeRegular()
+{
+	Accept(arraysy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	TypeSimple();
+	while (allLexems[lexNum].lexem == comma)
+	{
+		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		TypeSimple();
+	}
+	Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	Type();
+}
+
+void Type()
 {
 	switch (allLexems[lexNum].lexem)
 	{
@@ -300,24 +566,12 @@ void TypeMake()
 	case charc:
 	case minus:
 	case plus:
-	case intc:	
+	case intc:
 	case floatc:
 		TypeSimple();
 		break;
 	case arraysy:
-	{
-		Accept(arraysy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		TypeSimple();
-		while (allLexems[lexNum].lexem == comma)
-		{
-			Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			TypeSimple();
-		}
-		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		TypeMake();
-	}
+		TypeRegular();
 		break;
 	default:
 		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -325,165 +579,29 @@ void TypeMake()
 	}
 }
 
-void TypeParsing()
+void TypeDefinition()
 {
-	Accept(typesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	TypeMake();
-	Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	while (allLexems[lexNum].lexem == ident)
+	Type();
+}
+
+void TypeSection()
+{
+	if (allLexems[lexNum].lexem == typesy)
 	{
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Accept(equal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		TypeMake();
+		Accept(typesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		TypeDefinition();
 		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		while (allLexems[lexNum].lexem == ident)
+		{
+			TypeDefinition();
+			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		}
 	}
 }
 
-void OperatorVariableParsing()
-{
-	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	if (allLexems[lexNum].lexem == lbracket)
-	{
-		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		ExpressionParsing();
-		while (allLexems[lexNum].lexem == comma)
-		{
-			Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			ExpressionParsing();
-		}
-		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	}
-}
-
-void OperatorWhileParsing()
-{
-	Accept(whilesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	ExpressionParsing();
-	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	StatementMake();
-}
-
-void OperatorRepeatParsing()
-{
-	Accept(repeatsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	StatementMake();
-	while (allLexems[lexNum].lexem == semicolon)
-	{
-		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		StatementMake();
-	}
-	Accept(untilsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	ExpressionParsing();
-}
-
-void OperatorForParsing()
-{
-	Accept(forsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	ExpressionParsing();
-	Accept(tosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	ExpressionParsing();
-	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	StatementMake();
-}
-
-void OperatorIfParsing()
-{
-	Accept(ifsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	ExpressionParsing();
-	Accept(thensy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	StatementMake();
-	if (allLexems[lexNum].lexem == elsesy)
-	{
-		Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		StatementMake();
-	}
-}
-
-void StatementMake()
-{
-	//vector<int> ptra;
-	//if (!Belong(allLexems[lexNum].lexem, statement_start))
-	//{
-	//	Accept(18, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	//	SkipToBoth(statement_start, followers);
-	//}
-	//if (Belong(allLexems[lexNum].lexem, statement_start))
-	//{
-	while (allLexems[lexNum].lexem == ident || allLexems[lexNum].lexem == beginsy || allLexems[lexNum].lexem == casesy 
-		|| allLexems[lexNum].lexem == ifsy || allLexems[lexNum].lexem == whilesy
-		|| allLexems[lexNum].lexem == repeatsy || allLexems[lexNum].lexem == forsy)
-		switch (allLexems[lexNum].lexem)
-		{
-		case ident:
-		{
-			OperatorVariableParsing();
-			Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			ExpressionParsing();
-		}
-			break;
-		case beginsy:
-		{
-			Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			StatementMake();
-			while (allLexems[lexNum].lexem == semicolon)
-			{
-				Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-				StatementMake();
-			}
-			Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		}
-			break;
-		case casesy:
-		{
-			Accept(casesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			ExpressionParsing();
-			Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			CaseCycle();
-			while (allLexems[lexNum].lexem == semicolon)
-			{
-				Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-				if (allLexems[lexNum].lexem != elsesy)
-					CaseCycle();
-				else
-				{
-					Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-					StatementMake();
-					Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-				}
-			}
-			Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		}
-			break;
-		case ifsy:
-			OperatorIfParsing();
-			break;
-		case whilesy:
-			OperatorWhileParsing();
-			break;
-		case repeatsy:
-			OperatorRepeatParsing();
-			break;
-		case forsy:
-			OperatorForParsing();
-			break;
-		}
-}
-
-void StatementParsing()
-{
-	StatementMake();
-	while (allLexems[lexNum].lexem == semicolon) // && lexNum < lexemsCount)
-	{
-		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		StatementMake();
-	}
-}
-
-void BlockParsing()
+void Block()
 {
 	//vector<int> ptra;
 	//if (!Belong(allLexems[lexNum].lexem, block_start))
@@ -493,30 +611,26 @@ void BlockParsing()
 	//}
 	//if (Belong(allLexems[lexNum].lexem, block_start))
 	//{
-		if (allLexems[lexNum].lexem == typesy)
-		{
-		//	ptra = Union(var_start, followers);
-			TypeParsing();
-		}
 
-		if (allLexems[lexNum].lexem == varsy)
-		{
-		//	ptra = Union(var_start, followers);
-			VarParsing();
-		}
-		Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		//ptra = Union(statement_start, followers);
-		StatementParsing();
-		//if (!Belong(allLexems[lexNum].lexem, followers))
-		//{
-		//	Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		//	SkipTo(followers);
-		//}
-		Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//	ptra = Union(var_start, followers);
+	TypeSection();
+	
+	//	ptra = Union(var_start, followers);
+	VarSection();
+
+	StatementSection();
+
+	//ptra = Union(statement_start, followers);
+	//if (!Belong(allLexems[lexNum].lexem, followers))
+	//{
+	//	Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//	SkipTo(followers);
+	//}
+
 	//}
 }
 
-void Parsing()
+void Program()
 {	
 	if (lexemsCount > 0)
 	{
@@ -526,7 +640,7 @@ void Parsing()
 			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		}
-		BlockParsing();
+		Block();
 		Accept(point, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	}
 }

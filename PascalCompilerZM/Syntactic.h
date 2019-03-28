@@ -10,26 +10,48 @@ using namespace boost;
 
 extern int lexNum;
 
-void Parsing();
-void BlockParsing();
-void TypeParsing(); 
-void TypeMake();
+void Program();
+void Block();
+void TypeSection();
+void TypeDefinition();
+void Type();
+void TypeRegular();
 void TypeSimple();
-void ConstMake();
-void VarParsing(); 
-void VarMake();
-void StatementParsing();
-void StatementMake();
-void OperatorVariableParsing();
-void ExpressionParsing();
+void TypeLimited();
+void TypeEnumerated();
+void VarSection();
+void VarDefinition();
+void StatementSection();
+void Statement();
+void StatementUnlabeled();
+void StatementSimple();
+void StatementAssignment();
+void StatementTransition();
+void Variable();
+void VariableIndexed();
+void StatementComplex();
+void StatementConditional();
+void StatementCycle();
+void CycleRepeat();
+void CycleWhile();
+void CycleFor();
+void Const();
+void String();
+void Sign();
+void Number();
+void Expression();
+void ComparisonOperation();
 void ExpressionSimple();
-void AddendParsing();
-void MultiplierParsing();
+void AdaptiveOperation();
+void Addend();
+void Multiplier();
+void ConstWithoutSign();
+void MultiplicativeOperation();
 void CaseCycle();
-void OperatorIfParsing();
-void OperatorWhileParsing();
-void OperatorRepeatParsing();
-void OperatorForParsing();
+
+
+
+
 void Accept(int neededSym, int currentSym, int lineNum, int posNum);
 vector<int> Union(vector<int> starters, vector<int> followers);
 void SkipToBoth(vector<int> starters, vector<int> followers);
