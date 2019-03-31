@@ -1,12 +1,13 @@
 program my;
 
 type int = integer;
+v = char;
 ch = bool;
 (* LOL *)
 
-var a:int;
-b:ch;
-a:array [1..10, 1..10] of array[1..5] of integer;
+var :int;
+:ch;
+:array [1..10, 1..10] of array[1..5] of integer
 
 begin
 a[1,1] := 3;

@@ -19,6 +19,7 @@ int currLineNum = 0;
 
 void GetNextLine(ifstream& inFile, ofstream& fSym);
 void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap);
+void Sort(textPosition *arr, int size);
 
 int main()
 {
@@ -34,15 +35,17 @@ int main()
 
 	while (getline(fErrMsgs, errorString))
 	{
-
-		split(errorsVec, errorString, [](char c) {return c == ':'; });
+		split(errorsVec, errorString, [](char c) {return c == '?'; });
 		int errorNum = lexical_cast<int>(errorsVec[0]);
 		errorsMap[errorNum] = errorsVec[1];
 	}
 	fErrMsgs.close();
 
+	for (int i = 0; i < MAX_ERR_COUNT; i++)
+		errPositions[i].lineNumber = 999;
+
 	ifstream fPascalCode;
-	fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Code.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
@@ -51,10 +54,11 @@ int main()
 	fPascalCode.close();
 
 	Program();
+	Sort(errPositions, MAX_ERR_COUNT);
 
 	ofstream fResult;
 	fResult.open("Result.lst");
-	fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Code.txt");
 	Print(fPascalCode, fResult, errorsMap);
 	fPascalCode.close();
 	fResult.close();
@@ -124,4 +128,12 @@ void Print(ifstream& inFile, ofstream& outFile, map<int, string> errorsMap)
 		outFile << endl << "Кoмпиляция окончена, ошибок: " << currErrorsCount << "!";
 	else
 		outFile << endl << "Компиляция окончена, ошибок больше " << MAX_ERR_COUNT << "!";
+}
+
+void Sort(textPosition *arr, int size)
+{
+	for (int i = 0; i < size - 1; ++i)
+		for (int j = i + 1; j < size; ++j)
+			if (arr[i].lineNumber > arr[j].lineNumber) 
+				swap(arr[i], arr[j]);
 }

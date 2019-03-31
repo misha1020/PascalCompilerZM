@@ -234,7 +234,7 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 				}
 			}
 			else
-				AddErrorToTable(lineNum, posNum, 6);
+				AddErrorToTable(lineNum, posNum, 506);
 		}
 	}
 }
@@ -302,18 +302,15 @@ vector<int> GetNextLexems(string currentLine, int lineNum)
 			}
 			else if (currentLiter == '.')
 			{
-				if (i > 0 && IsInt(string(1, currentLine[i - 1])))
+				if (i < currentLine.length() && currentLine[i + 1] == '.')
 				{
-					if (i < currentLine.length() && currentLine[i + 1] == '.')
-					{
-						IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
-						IsLexemCorrenct("..", lineNum, i, currentLexems);
-						i++;
-						currentString = "";
-					}
-					else
-						currentString += ".";
+					IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
+					IsLexemCorrenct("..", lineNum, i, currentLexems);
+					i++;
+					currentString = "";
 				}
+				else if (i > 0 && IsInt(string(1, currentLine[i - 1])))
+						currentString += ".";
 				else
 				{
 					IsLexemCorrenct(currentString, lineNum, i - 1, currentLexems);
