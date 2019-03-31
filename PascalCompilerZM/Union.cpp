@@ -17,19 +17,18 @@ vector<int> string_start{ charc, stringc };
 vector<int> sign_start{ minus, plus };
 vector<int> typeLimited_start = const_start;
 vector<int> typeEnumerated_start{ leftpar };
-
-//vector<int> begin_start = statement_start;
-//vector<int> case_start{ ident, plus, minus, elsesy, endsy};
-//vector<int> varop_start{ ident };
+vector<int> expression_start{ minus, plus, ident, charc, stringc, intc, floatc, leftpar, notsy};
+vector<int> comparisonOperation_start{ equal, latergreater, later, greater, laterequal, greaterequal};
+vector<int> addend_start{ ident, charc, stringc, intc, floatc, leftpar, notsy };
+vector<int> multiplicativeOperation_start{ star, slash, divsy, modsy, andsy};
+vector<int> adaptiveOperation_start{ plus, minus, orsy };
+vector<int> statementAssignment_start{ assign, ident, charc, stringc, intc, floatc, leftpar, notsy };
 
 
 
 vector<int> block_follow{ point };
 vector<int> typeSection_follow{ varsy, beginsy };
 vector<int> varSection_follow{ beginsy };
-vector<int> typeDef_follow{ };
-//vector<int> typeSimple_follow{ };
-//vector<int> typeFollow_start{ };
 
 
 

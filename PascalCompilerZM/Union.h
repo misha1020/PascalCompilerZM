@@ -22,11 +22,15 @@ extern vector<int> typeEnumerated_start;
 extern vector<int> number_start;
 extern vector<int> string_start;
 extern vector<int> sign_start;
-//extern
-//extern
-//extern
-//extern
-//extern
+extern vector<int> expression_start;
+extern vector<int> comparisonOperation_start;
+extern vector<int> addend_start;
+extern vector<int> multiplicativeOperation_start;
+extern vector<int> adaptiveOperation_start;
+extern vector<int> statementAssignment_start;
+//extern vector<int>
+//extern vector<int>
+//extern vector<int>
 
 
 extern vector<int> block_follow;

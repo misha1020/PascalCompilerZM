@@ -63,7 +63,7 @@ vector<int> Union(vector<int> starters, vector<int> followers)
 //	Statement();
 //}
 
-void MultiplicativeOperation()
+void MultiplicativeOperation(vector<int> followers)
 {
 	switch (allLexems[lexNum].lexem)
 	{
@@ -83,15 +83,21 @@ void MultiplicativeOperation()
 		Accept(slash, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	}
+
+	if (!Belong(allLexems[lexNum].lexem, followers))
+	{
+		Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipTo(followers);
+	}
 }
 
-void ConstWithoutSign()
+void ConstWithoutSign(vector<int> followers)
 {
 	switch (allLexems[lexNum].lexem)
 	{
-	case ident:
-		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		break;
+	//case ident:
+	//	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	//	break;
 	case stringc:
 		Accept(stringc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
@@ -105,45 +111,82 @@ void ConstWithoutSign()
 		Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	}
-}
 
-void Multiplier()
-{
-	switch (allLexems[lexNum].lexem)
+	if (!Belong(allLexems[lexNum].lexem, followers))
 	{
-	case ident:
-		Variable();
-		break;
-	case charc:
-	case stringc:
-	case intc:
-	case floatc:
-		ConstWithoutSign();
-		break;
-	case leftpar:
-		Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Expression();
-		Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		break;
-	case notsy:
-		Accept(notsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Multiplier();
-		break;
+		Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipTo(followers);
 	}
 }
 
-void Addend()
+void Multiplier(vector<int> followers)
 {
-	Multiplier();
-	while (allLexems[lexNum].lexem == divsy || allLexems[lexNum].lexem == modsy || allLexems[lexNum].lexem == andsy
-		|| allLexems[lexNum].lexem == star || allLexems[lexNum].lexem == slash)
+	if (!Belong(allLexems[lexNum].lexem, addend_start))
 	{
-		MultiplicativeOperation();
-		Multiplier();
+		Accept(511, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(addend_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, addend_start))
+	{
+		switch (allLexems[lexNum].lexem)
+		{
+		case ident:
+			Variable(followers);
+			break;
+		case charc:
+		case stringc:
+		case intc:
+		case floatc:
+			ConstWithoutSign(followers);
+			break;
+		case leftpar:
+			Accept(leftpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			externalSymbols = Union(vector<int> {rightpar}, followers);
+			Expression(externalSymbols);
+			Accept(rightpar, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			break;
+		case notsy:
+			Accept(notsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			Multiplier(followers);
+			break;
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
 	}
 }
 
-void AdaptiveOperation()
+void Addend(vector<int> followers)
+{
+	if (!Belong(allLexems[lexNum].lexem, addend_start))
+	{
+		Accept(511, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(addend_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, addend_start))
+	{
+		externalSymbols = Union(multiplicativeOperation_start, followers);
+ 		Multiplier(externalSymbols);
+		while (allLexems[lexNum].lexem == divsy || allLexems[lexNum].lexem == modsy || allLexems[lexNum].lexem == andsy
+			|| allLexems[lexNum].lexem == star || allLexems[lexNum].lexem == slash)
+		{
+			MultiplicativeOperation(Union(addend_start, followers));
+			externalSymbols = Union(multiplicativeOperation_start, followers);
+			Multiplier(externalSymbols);
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
+	}
+}
+
+void AdaptiveOperation(vector<int> followers)
 {
 	switch (allLexems[lexNum].lexem)
 	{
@@ -157,20 +200,46 @@ void AdaptiveOperation()
 		Accept(orsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	}
-}
 
-void ExpressionSimple()
-{
-	//Sign(followers);
-	Addend();
-	while (allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus || allLexems[lexNum].lexem == orsy)
+	if (!Belong(allLexems[lexNum].lexem, followers))
 	{
-		AdaptiveOperation();
-		Addend();
+		Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipTo(followers);
 	}
 }
 
-void ComparisonOperation()
+void ExpressionSimple(vector<int> followers)
+{
+	if (!Belong(allLexems[lexNum].lexem, expression_start))
+	{
+		Accept(511, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(expression_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, expression_start))
+	{
+		externalSymbols = Union(addend_start, followers);
+		if (allLexems[lexNum].lexem == minus || allLexems[lexNum].lexem == plus)
+			Sign(externalSymbols);
+		externalSymbols = Union(multiplicativeOperation_start, followers);
+		externalSymbols = Union(externalSymbols, adaptiveOperation_start);
+		Addend(externalSymbols);
+		while (allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus || allLexems[lexNum].lexem == orsy)
+		{			
+			AdaptiveOperation(Union(addend_start, followers));
+			externalSymbols = Union(multiplicativeOperation_start, followers);
+			externalSymbols = Union(externalSymbols, adaptiveOperation_start);
+			Addend(externalSymbols);
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
+	}
+}
+
+void ComparisonOperation(vector<int> followers)
 {
 	switch (allLexems[lexNum].lexem)
 	{
@@ -193,17 +262,39 @@ void ComparisonOperation()
 		Accept(greaterequal, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		break;
 	}
+
+	if (!Belong(allLexems[lexNum].lexem, followers))
+	{
+		Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipTo(followers);
+	}
 }
 
-void Expression()
+void Expression(vector<int> followers)
 {
-	ExpressionSimple();
-	if (allLexems[lexNum].lexem == equal || allLexems[lexNum].lexem == latergreater
-		|| allLexems[lexNum].lexem == later || allLexems[lexNum].lexem == greater
-		|| allLexems[lexNum].lexem == laterequal || allLexems[lexNum].lexem == greaterequal)
+	if (!Belong(allLexems[lexNum].lexem, expression_start))
 	{
-		ComparisonOperation();
-		ExpressionSimple();
+		Accept(511, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(expression_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, expression_start))
+	{
+		externalSymbols = Union(comparisonOperation_start, followers);
+		ExpressionSimple(followers);
+		if (allLexems[lexNum].lexem == equal || allLexems[lexNum].lexem == latergreater
+			|| allLexems[lexNum].lexem == later || allLexems[lexNum].lexem == greater
+			|| allLexems[lexNum].lexem == laterequal || allLexems[lexNum].lexem == greaterequal)
+		{
+			externalSymbols = Union(expression_start, followers);
+			ComparisonOperation(externalSymbols);
+			ExpressionSimple(followers);
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
 	}
 }
 
@@ -225,6 +316,7 @@ void Number(vector<int> followers)
 			Accept(floatc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		}
+
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -251,6 +343,7 @@ void Sign(vector<int> followers)
 			Accept(minus, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		}
+
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -277,6 +370,7 @@ void String(vector<int> followers)
 			Accept(charc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			break;
 		}
+
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -316,6 +410,7 @@ void Const(vector<int> followers)
 		}
 			break;
 		}
+
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -329,32 +424,32 @@ void CycleFor()
 	Accept(forsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
+	//Expression();
 	Accept(tosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
+	//Expression();
 	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Statement();
+	//Statement();
 }
 
 void CycleWhile()
 {
 	Accept(whilesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
+	//Expression();
 	Accept(dosy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Statement();
+	//Statement();
 }
 
 void CycleRepeat()
 {
 	Accept(repeatsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Statement();
+	//Statement();
 	while (allLexems[lexNum].lexem == semicolon)
 	{
 		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Statement();
+		//Statement();
 	}
 	Accept(untilsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
+	//Expression();
 }
 
 void StatementCycle()
@@ -376,13 +471,13 @@ void StatementCycle()
 void StatementConditional()
 {
 	Accept(ifsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
+	//Expression();
 	Accept(thensy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Statement();
+	//Statement();
 	if (allLexems[lexNum].lexem == elsesy)
 	{
 		Accept(elsesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Statement();
+		//Statement();
 	}
 }
 
@@ -391,7 +486,7 @@ void StatementComplex()
 	switch (allLexems[lexNum].lexem)
 	{
 	case beginsy:
-		StatementSection();
+		//StatementSection();
 		break;
 	case ifsy:
 		StatementConditional();
@@ -404,23 +499,45 @@ void StatementComplex()
 	}
 }
 
-void VariableIndexed()
+void VariableIndexed(vector<int> followers)
 {
 	Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
+	externalSymbols = Union(vector<int> {comma, rbracket}, followers);
+	Expression(externalSymbols);
 	while (allLexems[lexNum].lexem == comma)
 	{
 		Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Expression();
+		externalSymbols = Union(vector<int> {comma, rbracket}, followers);
+		Expression(externalSymbols);
 	}
 	Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+
+	if (!Belong(allLexems[lexNum].lexem, followers))
+	{
+		Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipTo(followers);
+	}
 }
 
-void Variable()
+void Variable(vector<int> followers)
 {	
-	Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	if (allLexems[lexNum].lexem == lbracket)
-		VariableIndexed();
+	if (!Belong(allLexems[lexNum].lexem, vector<int> {ident})) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		Accept(876, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(vector<int> {ident}, followers);
+	}
+	if (allLexems[lexNum].lexem == ident) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		if (allLexems[lexNum].lexem == lbracket)
+			VariableIndexed(followers);
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
+	}
 }
 
 void StatementTransition()
@@ -429,63 +546,121 @@ void StatementTransition()
 	Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 }
 
-void StatementAssignment()
+void StatementAssignment(vector<int> followers)
 {
-	Variable();
-	Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Expression();
-}
-
-void StatementSimple()
-{
-	switch (allLexems[lexNum].lexem)
+	if (!Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
 	{
-	case ident:
-		StatementAssignment();
-		break;
-	case gotosy:
-		StatementTransition();
-		break;
+		Accept(876, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(statementAssignment_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		externalSymbols = Union(vector<int> {assign}, followers);
+		Variable(externalSymbols);
+		Accept(assign, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		Expression(followers);
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
 	}
 }
 
-void StatementUnlabeled()
+void StatementSimple(vector<int> followers)
 {
-	switch (allLexems[lexNum].lexem)
+	if (!Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
 	{
-	case beginsy:
-	case ifsy:
-	case whilesy:
-	case repeatsy:
-	case forsy:
-		StatementComplex();
-		break;
-	case ident:
-	case gotosy:
-		StatementSimple();
-		break;
+		Accept(876, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(statementAssignment_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		switch (allLexems[lexNum].lexem)
+		{
+		case ident:
+			externalSymbols = Union(expression_start, followers);
+			StatementAssignment(externalSymbols);
+			break;
+		case gotosy:
+			StatementTransition();
+			break;
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
 	}
 }
 
-void Statement()
+void StatementUnlabeled(vector<int> followers)
 {
-	switch (allLexems[lexNum].lexem)
+	if (!Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
 	{
-	case intc:
-	{
-		Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		StatementUnlabeled();
+		Accept(876, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(statementAssignment_start, followers);
 	}
+	if (Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		switch (allLexems[lexNum].lexem)
+		{
+		case beginsy:
+		case ifsy:
+		case whilesy:
+		case repeatsy:
+		case forsy:
+			StatementComplex();
+			break;
+		case ident:
+		case gotosy:
+			StatementSimple(followers);
+			break;
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
+	}
+}
+
+void Statement(vector<int> followers)
+{
+	if (!Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		Accept(876, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(statementAssignment_start, followers);
+	}
+	if (Belong(allLexems[lexNum].lexem, statementAssignment_start)) // statementAssignment_startstatementAssignment_startstatementAssignment_start
+	{
+		switch (allLexems[lexNum].lexem)
+		{
+		case intc:
+		{
+			Accept(intc, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			StatementUnlabeled(followers);  // ?????
+		}
 		break;
-	case beginsy:
-	case ifsy:
-	case whilesy:
-	case repeatsy:
-	case forsy:
-	case ident:
-	case gotosy:
-		StatementUnlabeled();
-		break;
+		case beginsy:
+		case ifsy:
+		case whilesy:
+		case repeatsy:
+		case forsy:
+		case ident:
+		case gotosy:
+			StatementUnlabeled(followers);  // ????/
+			break;
+		}
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
 	}
 }
 
@@ -510,16 +685,32 @@ void Statement()
 //	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 //}
 
-void StatementSection()
+void StatementSection(vector<int> followers)
 {
-	Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-	Statement();
-	while (allLexems[lexNum].lexem == semicolon)
+	if (!Belong(allLexems[lexNum].lexem, statementSection_start))
 	{
-		Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		Statement();
+		Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		SkipToBoth(statementSection_start, followers);
 	}
-	Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+	if (allLexems[lexNum].lexem == beginsy)
+	{
+		Accept(beginsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+		externalSymbols = Union(vector<int> { endsy, semicolon}, followers);
+		Statement(externalSymbols);
+		while (allLexems[lexNum].lexem == semicolon)
+		{
+			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			externalSymbols = Union(vector<int> { endsy, semicolon}, followers);
+			Statement(externalSymbols);
+		}
+		Accept(endsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+
+		if (!Belong(allLexems[lexNum].lexem, followers))
+		{
+			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			SkipTo(followers);
+		}
+	}
 }
 
 void VarDefinition(vector<int> followers)
@@ -558,8 +749,8 @@ void VarSection(vector<int> followers)
 	if (allLexems[lexNum].lexem == varsy)
 	{
 		Accept(varsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		externalSymbols = Union(vector<int> { semicolon }, followers);
 		do {
+			externalSymbols = Union(vector<int> { semicolon }, followers);
 			VarDefinition(externalSymbols);
 			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		} while (allLexems[lexNum].lexem == ident);
@@ -748,8 +939,8 @@ void TypeSection(vector<int> followers)
 	if (allLexems[lexNum].lexem == typesy)
 	{
 		Accept(typesy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-		externalSymbols = Union(vector<int> { semicolon }, followers);
 		do {
+			externalSymbols = Union(vector<int> { semicolon }, followers);
 			TypeDefinition(externalSymbols);
 			Accept(semicolon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		} while (allLexems[lexNum].lexem == ident);
@@ -774,7 +965,7 @@ void Block(vector<int> followers)
 		TypeSection(externalSymbols);
 		externalSymbols = Union(varSection_follow, followers);
 		VarSection(externalSymbols);
-		StatementSection();
+		StatementSection(followers);
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
