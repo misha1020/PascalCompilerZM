@@ -28,11 +28,16 @@ extern vector<int> addend_start;
 extern vector<int> multiplicativeOperation_start;
 extern vector<int> adaptiveOperation_start;
 extern vector<int> statementAssignment_start;
-//extern vector<int>
-//extern vector<int>
-//extern vector<int>
-
+extern vector<int> statement_start;
+extern vector<int> statementUnlabeled;
+extern vector<int> statementSimple_start;
+extern vector<int> statementTransition_start;
+extern vector<int> variable_start;
+//extern vector<int> 
+//extern vector<int> 
+//extern vector<int> 
 
 extern vector<int> block_follow;
 extern vector<int> typeSection_follow;
 extern vector<int> varSection_follow;
+extern vector<int> statement_follow;

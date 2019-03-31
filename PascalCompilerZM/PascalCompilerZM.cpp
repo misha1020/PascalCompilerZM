@@ -23,9 +23,6 @@ void Sort(textPosition *arr, int size);
 
 int main()
 {
-	//vector<int> both = Union(codes_idstart, acodes_block);
-	//cout << 123;
-	
 	setlocale(LC_ALL, "Russian");
 	vector<string> errorsVec;
 	map<int, string> errorsMap;
@@ -45,7 +42,7 @@ int main()
 		errPositions[i].lineNumber = 999;
 
 	ifstream fPascalCode;
-	fPascalCode.open("Code.txt");
+	fPascalCode.open("PascalCode.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
@@ -58,7 +55,7 @@ int main()
 
 	ofstream fResult;
 	fResult.open("Result.lst");
-	fPascalCode.open("Code.txt");
+	fPascalCode.open("PascalCode.txt");
 	Print(fPascalCode, fResult, errorsMap);
 	fPascalCode.close();
 	fResult.close();
