@@ -8,6 +8,8 @@ ch = bool;
 var :int;
 :ch;
 :array [1..10, 1..10] of array[1..5] of integer
+bool : integer;
+sex: bool;
 
 begin
 a[1,1] := 3;

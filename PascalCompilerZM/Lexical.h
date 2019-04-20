@@ -33,6 +33,8 @@ const int MAX_ERR_COUNT = 20;
 extern int currErrorsCount;
 extern bool isComment;
 extern textPosition errPositions[MAX_ERR_COUNT];
+extern vector<string> tableNames;
+extern vector<string> tableValues;
 
 extern int lexemsCount;
 extern 	int currLineNum;

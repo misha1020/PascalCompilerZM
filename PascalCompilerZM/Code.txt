@@ -1,6 +1,5 @@
 program my;
-
-var a: integer;
+type a = integer; b = a; c = 9..10; f = (one, two, three); d = real;
 
 begin
 

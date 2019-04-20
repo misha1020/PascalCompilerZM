@@ -35,11 +35,3 @@ vector<int> typeSection_follow{ varsy, beginsy };
 vector<int> varSection_follow{ beginsy };
 vector<int> statement_follow{ semicolon, endsy };
 
-
-
-//vector<int> type_follow{ equal, semicolon, ident, leftpar, stringc, charc, intc, floatc, minus, plus, arraysy };
-//vector<int> var_follow{ comma, colon, semicolon, ident, leftpar, stringc, charc, intc, floatc, minus, plus, arraysy };
-//vector<int> statement_follow{ semicolon };
-//vector<int> begin_follow = statement_follow;
-//vector<int> case_follow{ ofsy, semicolon};
-//vector<int> varop_follow{ lbracket, comma, rbracket, assign };

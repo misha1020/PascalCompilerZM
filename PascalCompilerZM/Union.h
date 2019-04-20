@@ -33,9 +33,6 @@ extern vector<int> statementUnlabeled;
 extern vector<int> statementSimple_start;
 extern vector<int> statementTransition_start;
 extern vector<int> variable_start;
-//extern vector<int> 
-//extern vector<int> 
-//extern vector<int> 
 
 extern vector<int> block_follow;
 extern vector<int> typeSection_follow;

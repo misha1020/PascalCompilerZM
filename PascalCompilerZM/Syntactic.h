@@ -2,15 +2,74 @@
 
 #include <fstream>
 #include <climits>
-
 #include "Lexical.h"
 
 using namespace std;
 using namespace boost;
 
-extern int lexNum;
-extern vector<int> externalSymbols;
+#define   SCALARS	401
+#define   LIMITEDS	402
+#define   ENUMS		403
+#define   ARRAYS	404
 
+//union variablePart
+//{
+//	struct typeScalar
+//	{
+//		string scalarValue;
+//	};
+//
+//	struct typeLimited
+//	{
+//		union range
+//		{
+//			struct charLimited
+//			{
+//				string min;
+//				string max;
+//			};
+//
+//			struct intLimited
+//			{
+//				int min;
+//				int max;
+//			};
+//		};
+//	};
+//
+//	struct typeEnumerated
+//	{
+//		vector<string> enumElems;
+//	};
+//
+//	struct typeRegular
+//	{
+//		vector<typeLimited> limiteds;
+//		typeScalar scalar;
+//	};
+//};
+
+//struct typeElement
+//{
+//	int typeCode;
+//	union variablePart varpart;
+//};
+
+struct identElement
+{
+	string useClass;
+	int typeCode;
+	vector<string> values;
+};
+
+extern map<string, identElement> tableDummyIdents;
+extern map<string, identElement> tableIdents;
+extern int lexNum;
+extern int nameNum;
+extern vector<int> externalSymbols;
+extern string currentLocation;
+
+void MakeTableDummyIdents();
 void Program();
 void Block(vector<int> followers);
 void TypeSection(vector<int> followers);
@@ -48,7 +107,6 @@ void Addend(vector<int> followers);
 void Multiplier(vector<int> followers);
 void ConstWithoutSign(vector<int> followers);
 void MultiplicativeOperation(vector<int> followers);
-//void CaseCycle();
 
 
 void Accept(int neededSym, int currentSym, int lineNum, int posNum);
@@ -56,3 +114,4 @@ vector<int> Union(vector<int> starters, vector<int> followers);
 void SkipToBoth(vector<int> starters, vector<int> followers);
 void SkipTo(vector<int> symbols);
 bool Belong(int symbol, vector<int> symbols);
+identElement FindElemInTableIdents(map<string, identElement> tbIdents, string someValue);

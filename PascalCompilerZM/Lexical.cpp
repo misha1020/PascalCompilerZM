@@ -10,6 +10,9 @@ int lexemsCurrSize = 256;
 lexems*  allLexems = new lexems[lexemsCurrSize];
 int lexemsCount = 0;
 
+vector<string> tableNames;
+vector<string> tableValues;
+
 map<string, int> keyWords = {
 {"do", dosy},
 {"if", ifsy},
@@ -162,6 +165,7 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 			{
 				AddLexem(lineNum, posNum, ident);
 				currentLexems.push_back(ident);
+				tableNames.push_back(lexem);					// Добавить в таблицу имён
 			}
 			else if (IsInt(lexem))
 			{
@@ -174,6 +178,7 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 					{
 						AddLexem(lineNum, posNum, intc);
 						currentLexems.push_back(intc);
+						tableValues.push_back(lexem);
 					}
 				}
 				else
@@ -226,11 +231,14 @@ void IsLexemCorrenct(string lexem, int lineNum, int posNum, vector<int>& current
 				{
 					AddLexem(lineNum, posNum, charc);
 					currentLexems.push_back(charc);
+					tableValues.push_back(lexem);
+
 				}
 				else 
 				{
 					AddLexem(lineNum, posNum, stringc);
 					currentLexems.push_back(stringc);
+					tableValues.push_back(lexem);
 				}
 			}
 			else

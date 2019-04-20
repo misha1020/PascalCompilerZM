@@ -42,7 +42,7 @@ int main()
 		errPositions[i].lineNumber = 999;
 
 	ifstream fPascalCode;
-	fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Code.txt");
 
 	ofstream fSymWrite;
 	fSymWrite.open("Sym.txt");
@@ -50,12 +50,12 @@ int main()
 	fSymWrite.close();
 	fPascalCode.close();
 
-	Program();
+	Program();							// синтаксис
 	Sort(errPositions, MAX_ERR_COUNT);
 
 	ofstream fResult;
 	fResult.open("Result.lst");
-	fPascalCode.open("PascalCode.txt");
+	fPascalCode.open("Code.txt");
 	Print(fPascalCode, fResult, errorsMap);
 	fPascalCode.close();
 	fResult.close();
