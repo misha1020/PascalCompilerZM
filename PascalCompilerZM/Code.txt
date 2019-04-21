@@ -2,21 +2,51 @@ program my;
 type a = integer; 
 b = a; 
 my = integer;
-c = 'a'..'z'; 
+c = 'a'..'y'; 
 f = (one, two, three); 
 d = real;
 wq = (how, are, one, you);
 lol = integer;
 
 var 
-g: integer;
+g,fff,qweeeqw : integer;
+str : char;
+lim : c;
 qwer : integer;
 jj : real;
 t : lol;
 v : f;
 op : boolean;
+pro : 1..100;
 
 begin
+
+pro := 12;
+pro := 'f';
+pro := 333;
+
+lim := 12;
+lim := 'f';
+lim := 'z';
+lim := 'aa';
+
+end.
+
+
+
+
+(*
+
+fff := 12;
+str := 'hello';
+str := 12;
+t := 'f';
+lim := 'g';
+pro := 12;
+pro := 'f';
+lim := 11;
+t := 10;
+zz := 12;
 
 g := 12 + 11;
 qwer := 111;
@@ -29,12 +59,7 @@ zz := 12;
 jj := 1 > 2;
 zz := 5 > 2;
 
-end.
 
-
-
-
-(*
 op := 1 < 2;
 g := g + qwer;
 v := three;

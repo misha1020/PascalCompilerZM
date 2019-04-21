@@ -69,7 +69,6 @@ extern int nameNum;
 extern vector<int> externalSymbols;
 extern vector<int> currentExpression;
 extern string currentLocation;
-extern bool worksWithArray;
 
 void MakeTableDummyIdents();
 void Program();

@@ -8,7 +8,6 @@ int lexNum = 0, nameNum = 0, valueNum = 0;
 vector<int> externalSymbols, currentExpression;
 map<string, identElement> tableDummyIdents, tableIdents;
 string currentLocation;
-bool worksWithArray = false;
 string isBoolType = "not";
 
 void Accept(int neededSym, int currentSym, int lineNum, int posNum)
@@ -88,11 +87,17 @@ string exprType(vector<int> expr)
 				return "undefined";
 		}
 		if (expr[0] == intc)
+		{
+			valueNum++;
 			return "integer";
+		}
 		if (expr[0] == floatc)
 			return "real";
 		if (expr[0] == charc || expr[0] == stringc)
+		{
+			valueNum++;
 			return "char";
+		}
 		if (expr[0] == TRUE || expr[0] == FALSE)
 			return "boolean";
 	}
@@ -102,6 +107,8 @@ string exprType(vector<int> expr)
 		{
 			if (expr[i] == ident)
 				nameNum++;
+			else if (expr[i] == charc || expr[0] == stringc || expr[0] == intc)
+				valueNum++;
 		}
 	}
 	else
@@ -786,6 +793,25 @@ void StatementAssignment(vector<int> followers)
 		{
 			AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 328);
 		}
+		else if (currentElem.typeCode == LIMITEDS)
+		{
+			if (currentType == currentElem.values[0])
+			{
+				if (currentType == "integer")
+				{
+					if (lexical_cast<int>(tableValues[valueNum - 1]) > lexical_cast<int>(currentElem.values[2]) ||
+						lexical_cast<int>(tableValues[valueNum - 1]) < lexical_cast<int>(currentElem.values[1]))
+						AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 306);
+				}
+				else if (currentType == "char")
+				{
+					if (tableValues[valueNum - 1].length() > 1 || tableValues[valueNum - 1] > currentElem.values[2] || tableValues[valueNum - 1] < currentElem.values[1])
+						AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 306);
+				}			
+			}
+			else
+				AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 328);
+		}
 		nameNum++;
 
 		if (!Belong(allLexems[lexNum].lexem, followers))
@@ -937,6 +963,7 @@ void VarDefinition(vector<int> followers)
 		{
 			Accept(comma, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
+			nameNum++;
 		}
 		Accept(colon, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Type(followers);
@@ -991,34 +1018,31 @@ void TypeEnumerated(vector<int> followers)
 			i++;
 		}
 
-		if (!worksWithArray)
+		bool isOk = true;
+		if (FindElemInTableIdents(tableIdents, tableNames[nameNum]).useClass != "null")
+			AddErrorToTable(allLexems[lexNum - 4 - (i - 1) * 2].lineNumber, allLexems[lexNum - 4 - (i - 1) * 2].charNumber, 101);
+		else
 		{
-			bool isOk = true;
-			if (FindElemInTableIdents(tableIdents, tableNames[nameNum]).useClass != "null")
-				AddErrorToTable(allLexems[lexNum - 4 - (i - 1) * 2].lineNumber, allLexems[lexNum - 4 - (i - 1) * 2].charNumber, 101);
-			else
+			vector<string> enumElements;
+			for (int j = 0; j < i; j++)
 			{
-				vector<string> enumElements;
+				enumElements.push_back(tableNames[nameNum + 1 + j]);
+				identElement currentElem = FindElemInTableIdents(tableIdents, tableNames[nameNum + 1 + j]);
+				if (currentElem.useClass != "null")
+				{
+					AddErrorToTable(allLexems[lexNum - 1 - (i - j - 1) * 2].lineNumber, allLexems[lexNum - 1 - (i - j - 1) * 2].charNumber, 101);
+					isOk = false;
+				}
+			}
+			if (isOk)
+			{
 				for (int j = 0; j < i; j++)
 				{
-					enumElements.push_back(tableNames[nameNum + 1 + j]);
-					identElement currentElem = FindElemInTableIdents(tableIdents, tableNames[nameNum + 1 + j]);
-					if (currentElem.useClass != "null")
-					{
-						AddErrorToTable(allLexems[lexNum - 1 - (i - j - 1) * 2].lineNumber, allLexems[lexNum - 1 - (i - j - 1) * 2].charNumber, 101);
-						isOk = false;
-					}
+					identElement tElement{ "enumer" };
+					tableIdents.insert(pair<string, identElement>(enumElements[j], tElement));
 				}
-				if (isOk)
-				{
-					for (int j = 0; j < i; j++)
-					{
-						identElement tElement{ "enumer" };
-						tableIdents.insert(pair<string, identElement>(enumElements[j], tElement));
-					}
-					identElement tElement{ currentLocation, ENUMS, enumElements };
-					tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
-				}
+				identElement tElement{ currentLocation, ENUMS, enumElements };
+				tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
 			}
 		}
 		nameNum += i + 1;
@@ -1043,9 +1067,9 @@ void TypeLimited(vector<int> followers)
 	{
 		externalSymbols = Union(vector<int> { twopoints}, followers);
 		bool isInt = false, isChar = false;;
-		if (allLexems[lexNum].lexem == intc || allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus)	
+		if (allLexems[lexNum].lexem == intc || allLexems[lexNum].lexem == plus || allLexems[lexNum].lexem == minus)
 			isInt = true;
-		else 
+		else
 			isChar = true;
 		Const(externalSymbols);
 		Accept(twopoints, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
@@ -1055,29 +1079,28 @@ void TypeLimited(vector<int> followers)
 			isInt = false;
 		Const(followers);
 
-		if (!worksWithArray)
+
+		if (isInt || isChar)
 		{
-			if (isInt || isChar)
+			if (FindElemInTableIdents(tableIdents, tableNames[nameNum]).useClass != "null")
+				AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 101);
+			else if (isInt && lexical_cast<int>(tableValues[valueNum]) < lexical_cast<int>(tableValues[valueNum + 1]))
 			{
-				if (FindElemInTableIdents(tableIdents, tableNames[nameNum]).useClass != "null")
-					AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 101);
-				else if (isInt && lexical_cast<int>(tableValues[valueNum]) < lexical_cast<int>(tableValues[valueNum + 1]))
-				{
-					identElement tElement{ currentLocation, LIMITEDS, vector<string> { tableValues[valueNum], tableValues[valueNum + 1]} };
-					tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
-				}
-				else if (tableValues[valueNum] < tableValues[valueNum + 1])
-				{
-					identElement tElement{ currentLocation, LIMITEDS, vector<string> { tableValues[valueNum], tableValues[valueNum + 1]} };
-					tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
-				}
-				else
-					AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 102);
+				identElement tElement{ currentLocation, LIMITEDS, vector<string> { "integer", tableValues[valueNum], tableValues[valueNum + 1]} };
+				tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
+			}
+			else if (tableValues[valueNum] < tableValues[valueNum + 1])
+			{
+				identElement tElement{ currentLocation, LIMITEDS, vector<string> { "char", tableValues[valueNum], tableValues[valueNum + 1]} };
+				tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
 			}
 			else
-				AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 328);
-			nameNum++;
+				AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 102);
 		}
+		else
+			AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 328);
+		nameNum++;
+
 		valueNum += 2;
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
@@ -1101,28 +1124,27 @@ void TypeSimple(vector<int> followers)
 		case ident:
 		{
 			Accept(ident, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
-			if (!worksWithArray)
+
+			if (FindElemInTableIdents(tableIdents, tableNames[nameNum]).useClass != "null")
+				AddErrorToTable(allLexems[lexNum - 3].lineNumber, allLexems[lexNum - 3].charNumber, 101);
+			else
 			{
-				if (FindElemInTableIdents(tableIdents, tableNames[nameNum]).useClass != "null")
-					AddErrorToTable(allLexems[lexNum - 3].lineNumber, allLexems[lexNum - 3].charNumber, 101);
+				identElement currentElem = FindElemInTableIdents(tableIdents, tableNames[nameNum + 1]);
+				if (currentElem.useClass != "type")
+					currentElem = FindElemInTableIdents(tableDummyIdents, tableNames[nameNum + 1]);
+				if (currentElem.useClass != "type")
+					AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 331);
 				else
 				{
-					identElement currentElem = FindElemInTableIdents(tableIdents, tableNames[nameNum + 1]);
-					if (currentElem.useClass != "type")
-						currentElem = FindElemInTableIdents(tableDummyIdents, tableNames[nameNum + 1]);
-					if (currentElem.useClass != "type")
-						AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 331);
-					else
-					{
-						identElement tElement{ currentLocation, currentElem.typeCode,  currentElem.values };  //vector<string> { tableNames[nameNum + 1]
-						tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
-					}
+					identElement tElement{ currentLocation, currentElem.typeCode,  currentElem.values };  
+					tableIdents.insert(pair<string, identElement>(tableNames[nameNum], tElement));
 				}
-				nameNum++;
 			}
 			nameNum++;
+
+			nameNum++;
 		}
-			break;
+		break;
 		case leftpar:
 			externalSymbols = Union(vector<int> { rightpar }, followers);
 			TypeEnumerated(externalSymbols);
@@ -1154,7 +1176,6 @@ void TypeRegular(vector<int> followers)
 	}
 	if (Belong(allLexems[lexNum].lexem, typeRegular_start))
 	{
-		worksWithArray = true;
 		Accept(arraysy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(lbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		nameNum++;
@@ -1167,7 +1188,6 @@ void TypeRegular(vector<int> followers)
 		Accept(rbracket, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Accept(ofsy, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
 		Type(followers);
-		worksWithArray = false;
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
