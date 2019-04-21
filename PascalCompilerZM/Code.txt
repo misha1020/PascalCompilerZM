@@ -1,17 +1,51 @@
 program my;
-type a = integer; b = a; c = 9..10; f = (one, two, three); d = real;
+type a = integer; 
+b = a; 
+my = integer;
+c = 'a'..'z'; 
+f = (one, two, three); 
+d = real;
+wq = (how, are, one, you);
+lol = integer;
+
+var 
+g: integer;
+qwer : integer;
+jj : real;
+t : lol;
+v : f;
+op : boolean;
 
 begin
 
-b := a > 2;
-g := 12;
+g := 12 + 11;
+qwer := 111;
+jj := 44.3 + 11 * 2 - 7.11;
+op := 1;
+op := (1 < 2) < 13;
+op := g < qwer;
+g := 11 + 33.3;
+zz := 12;
+jj := 1 > 2;
+zz := 5 > 2;
 
 end.
 
 
 
 
-(*вар
+(*
+op := 1 < 2;
+g := g + qwer;
+v := three;
+jj := one;
+v := weqwe;
+g := 12;
+zz := 10 + 1;
+jj := one;
+
+
+вар
 var ***1** a, l :integer;
 b,f (a, , f);
 f1, f1:(a1,a2, ,a3) 56;
