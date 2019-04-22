@@ -107,7 +107,7 @@ string exprType(vector<int> expr)
 		{
 			if (expr[i] == ident)
 				nameNum++;
-			else if (expr[i] == charc || expr[0] == stringc || expr[0] == intc)
+			else if (expr[i] == charc || expr[i] == stringc || expr[i] == intc)
 				valueNum++;
 		}
 	}
@@ -805,13 +805,14 @@ void StatementAssignment(vector<int> followers)
 				}
 				else if (currentType == "char")
 				{
-					if (tableValues[valueNum - 1].length() > 1 || tableValues[valueNum - 1] > currentElem.values[2] || tableValues[valueNum - 1] < currentElem.values[1])
+					if (tableValues[valueNum - 1].length() > 3 || tableValues[valueNum - 1] > currentElem.values[2] || tableValues[valueNum - 1] < currentElem.values[1])
 						AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 306);
 				}			
 			}
 			else
 				AddErrorToTable(allLexems[lexNum - 1].lineNumber, allLexems[lexNum - 1].charNumber, 328);
 		}
+
 		nameNum++;
 
 		if (!Belong(allLexems[lexNum].lexem, followers))
@@ -1101,7 +1102,7 @@ void TypeLimited(vector<int> followers)
 			AddErrorToTable(allLexems[lexNum - 4].lineNumber, allLexems[lexNum - 3].charNumber, 328);
 		nameNum++;
 
-		valueNum += 2;
+ 		valueNum += 2;
 		if (!Belong(allLexems[lexNum].lexem, followers))
 		{
 			Accept(6, allLexems[lexNum].lexem, allLexems[lexNum].lineNumber, allLexems[lexNum].charNumber);
